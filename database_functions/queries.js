@@ -10,7 +10,14 @@ const createAccount = (connection, userid, username, email, password, phone) => 
 }
 
 const login = (connection, username, password) => {
-    return connection.query(`SELECT user_id from account WHERE username='${username}' AND password='${password}'`)
+    return connection.query(
+        `SELECT user_id from account WHERE username=? AND password=?`,
+         [username, password],
+         (err, resp) => {
+            console.log('err:', err)
+            console.log('resp:', resp)
+         }
+        )
 }
 
 module.exports = {
