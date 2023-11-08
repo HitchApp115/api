@@ -9,11 +9,11 @@ const {
     verifyLoginHash 
 } = require('./helpers')
 
+const {RoutesClient} = require('@googlemaps/routing').v2;
 const loginHashMap = JSON.parse(fs.readFileSync('logins.json')) // new Map()
 
 const app = express();
 const port = process.env.PORT || 3000;
-
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
@@ -50,7 +50,7 @@ app.get('/account/login', async (req, res) => {
     res.send({status: 'success', loginToken})
   });
 
-app.get('/rides/completed', (req, res) => {
+app.get('/rides/completed', async (req, res) => {
     const { authorization } = req.headers
     if (!verifyLoginHash(loginHashMap, authorization, new Date())){
         res
@@ -75,3 +75,37 @@ app.listen(port, () => {
   console.log(`Server running at http://localhost:${port}`);
 });
 
+
+  
+app.get('/directions', async(req, res) => {
+    console.log("GO")
+    const routingClient = new RoutesClient();
+    /*const origin = 'New York, NY';
+    const destination = 'Los Angeles, CA';
+  
+    googleMapsClient.directions({
+      origin: origin,
+      destination: destination,
+      mode: 'driving', // You can set the travel mode (driving, walking, transit, etc.)
+    }, (err, response) => {
+      if (!err) {
+        res.json(response.json);
+      } else {
+        console.error(err);
+        res.status(500).json({ error: 'Error fetching directions' });
+      }
+    });*/
+    callComputeRoutes();
+    res.send({status: 'success'})
+  });
+  async function callComputeRoutes() {
+    // Construct request
+    const request = {
+      origin,
+      destination,
+    };
+  
+    // Run request
+    const response = await routingClient.computeRoutes(request);
+    console.log(response);
+  }
