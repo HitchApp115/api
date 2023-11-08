@@ -1,4 +1,6 @@
 const express = require('express');
+const axios = require('axios');
+
 const fs = require('fs')
 const {connection, connect, close } = require('./database_functions/connect')
 const { createAccount, login, pollCompletedRides } = require('./database_functions/queries')
@@ -69,6 +71,31 @@ app.get('/rides/completed', (req, res) => {
     })
 
 })
+
+app.get('/directions', async (req, res) => {
+    try {
+      const { origin, destination } = req.query;
+  
+      if (!origin || !destination) {
+        return res.status(400).json({ error: 'Both origin and destination are required.' });
+      }
+  
+      // Make a request to the Google Maps Directions API
+      const response = await axios.get('https://maps.googleapis.com/maps/api/directions/json', {
+        params: {
+          origin,
+          destination,
+          key: "AIzaSyDP9-25-Nle5WIbfouhwceH0Egiw8KgShA",
+        },
+      });
+  
+      // Extract and send the response from Google Maps API to the client
+      res.json(response.data);
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ error: 'An error occurred while fetching directions.' });
+    }
+  });
 
 
 app.listen(port, () => {
