@@ -5,8 +5,15 @@ const createAccount = (connection, userid, username, email, password, phone, cal
         (err, resp) => {
             if (err) {
                 if (err.code === 'ER_DUP_ENTRY') {
-                    // Duplicate entry error, call the callback with an error status
-                    callback({ status: 'error', message: 'Duplicate entry error' }, null);
+                    // Check the error message for the column causing the duplicate entry
+                    if (err.message.includes('email')) {
+                        callback({ status: 'error', message: 'Duplicate email entry error' }, null);
+                    } else if (err.message.includes('phone_num')) {
+                        callback({ status: 'error', message: 'Duplicate phone entry error' }, null);
+                    } else {
+                        // Other duplicate entry error, call the callback with a generic message
+                        callback({ status: 'error', message: 'Duplicate entry error' }, null);
+                    }
                 } else {
                     // Other error, call the callback with an error status
                     callback({ status: 'error', message: err.message }, null);
