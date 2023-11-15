@@ -70,6 +70,50 @@ app.get('/rides/completed', async (req, res) => {
 
 })
 
+<<<<<<< Updated upstream
+=======
+app.get('/rides/create', async (req, res) => {
+    const { authorization } = req.headers
+    if (!verifyLoginHash(loginHashMap, authorization, new Date())){
+        res
+            .status(401)
+            .send("User not logged in")
+        return
+    }
+
+    //const { userId } = loginHashMap.get(authorization)
+    const {userId} = loginHashMap[authorization]
+    const rideId = randomId()
+    const { startPoint, destination, riders, costPerRider, pickUpDistance } = req.body
+    
+    let resp = await createNewRide(connection, rideId, userId, startPoint, destination, riders, costPerRider, pickUpDistance)
+    console.log( resp )
+    res.send({
+        status: 'success',
+    })
+
+})
+
+app.get('/directions', async (req, res) => {
+    try {
+      const { origin, destination } = req.query;
+  
+      if (!origin || !destination) {
+        return res.status(400).json({ error: 'Both origin and destination are required.' });
+      }
+  
+      // Make a request to the Google Maps Directions API
+      const response = getRoutesJSON(origin, destination)
+  
+      // Extract and send the response from Google Maps API to the client
+      res.json(response.data);
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ error: 'An error occurred while fetching directions.' });
+    }
+  });
+
+>>>>>>> Stashed changes
 
 app.listen(port, () => {
   console.log(`Server running at http://localhost:${port}`);
