@@ -113,13 +113,7 @@ app.get('/directions', async (req, res) => {
       }
   
       // Make a request to the Google Maps Directions API
-      const response = await axios.get('https://maps.googleapis.com/maps/api/directions/json', {
-        params: {
-          origin,
-          destination,
-          key: "AIzaSyDP9-25-Nle5WIbfouhwceH0Egiw8KgShA",
-        },
-      });
+      const response = getRoutesJSON(origin, destination)
   
       // Extract and send the response from Google Maps API to the client
       res.json(response.data);
