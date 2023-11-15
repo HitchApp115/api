@@ -103,11 +103,11 @@ app.get('/rides/create', async (req, res) => {
     })
 
 })
-//startPoint is in format Name:Lat,Lon
+//startPoint is in format Name:Lat,Lon    maxPrice is in format of an int
 app.get('/rides/view', async(req, res) => {
   const {startPoint} = req.body
-
-  let resp = await getNearbyRides(connection, startPoint)
+  const {maxPrice} = req.body
+  let resp = await getNearbyRides(connection, startPoint, maxPrice)
   console.log(resp)
   res.send({
     status: 'success'

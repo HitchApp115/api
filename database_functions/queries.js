@@ -73,8 +73,8 @@ const createNewRide = async (connection, ride_id, driver_id, start_point, driver
     })
 }
 
-//user_point is in format Name:Lat,Lon
-const getNearbyRides = async(connection, user_point) => {
+//user_point is in format Name:Lat,Lon      maxPrice format is just an int
+const getNearbyRides = async(connection, user_point, maxPrice) => {
     let latLon = user_point.split(":")[1] //this is probably slow lmao
     let ar = latLon.split(",")
     let userLat = ar[0]
@@ -82,8 +82,8 @@ const getNearbyRides = async(connection, user_point) => {
 
     return new Promise((resolve) => {
         connection.query(
-            `Select * from pending_active_rides WHERE pickup_dist > GET_DIST(?, ?, start_point)`,
-            [userLat, userLon],
+            `Select * from pending_active_rides WHERE pickup_dist > GET_DIST(?, ?, start_point) AND cost_per_rider <= ?`,
+            [userLat, userLon, maxPrice],
             (err, resp) => {
                 console.log('err:', err)
                 console.log('resp:', resp)
