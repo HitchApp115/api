@@ -1,5 +1,13 @@
 const crypto = require('crypto')
+const degreesToRadians = (degrees) => {
+    //console.log("degrees" + degrees)
+    return degrees * (Math.PI / 180);
+    
+}
 
+const radiansToDegrees = (rads) => {
+    return rads / (Math.PI / 180)
+}
 const randomId = () => {
     return Math.floor(Math.random() * 10000000);
 }
@@ -33,10 +41,33 @@ const getRoutesJSON = async (origin, destination) => {
       return response
 }
 
+const getDist = async(origin, destination) => {
+    console.log(origin, destination)
+    let lat1, lon1, lat2, lon2, dLat, dLon
+    lat1 = origin[0]
+    lon1 = origin[1]
+    
+    lat2 = destination[0]
+    lon2 = destination[1]
+    //console.log(lat1, lon1, lat2, lon2)
+    earthRadiusKm = 6371
+    //console.log(lat1, lat2);
+    dLat = degreesToRadians(lat2-lat1);
+    dLon = degreesToRadians(lon2-lon1);
+    
+    lat1 = degreesToRadians(lat1);
+    lat2 =  degreesToRadians(lat2);
+  
+    let a = Math.sin(dLat/2) * Math.sin(dLat/2) +
+            Math.sin(dLon/2) * Math.sin(dLon/2) * Math.cos(lat1) * Math.cos(lat2); 
+    let c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a)); 
+    return earthRadiusKm * c;
+}
+
 module.exports = {
     randomId,
     loginHash,
     passwordSalt,
     verifyLoginHash,
-    getRoutesJSON
+    getRoutesJSON,
 }

@@ -73,8 +73,23 @@ const createNewRide = async (connection, ride_id, driver_id, start_point, driver
     })
 }
 
+//user_point is in format Name:Lat,Lon
 const getNearbyRides = async(connection, user_point) => {
-    
+    let latLon = user_point.split(":")[1]
+    let ar = latLon.split(",")
+    let userLat = ar[0]
+    let userLon = ar[1]
+
+    connection.query(
+        `Select * from pending_active_rides WHERE pickup_dist < GET_DIST(?, ?, start_point)`,
+        [userLat, userLon],
+        (err, resp) => {
+            console.log('err:', err)
+            console.log('resp:', resp)
+            resolve(resp)
+        }
+    )
+
 }
 
 module.exports = {

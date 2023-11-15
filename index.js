@@ -9,9 +9,8 @@ const {
     loginHash, 
     passwordSalt, 
     verifyLoginHash,
-    getRoutesJSON
+    getRoutesJSON,
 } = require('./helpers')
-
 const loginHashMap = JSON.parse(fs.readFileSync('logins.json')) // new Map()
 
 const app = express();
