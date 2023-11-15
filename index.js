@@ -26,8 +26,8 @@ app.post('/account/create', async (req, res) => {
   res.send({status: 'success'})
 });
 
-app.get('/account/login', async (req, res) => {
-    const { username, password } = req.query
+app.post('/account/login', async (req, res) => {
+    const { username, password } = req.body
     const resp = await login( connection, username, passwordSalt(username, password) )
     if (!resp.length){
         res
@@ -77,35 +77,25 @@ app.listen(port, () => {
 
 
   
-app.get('/directions', async(req, res) => {
-    console.log("GO")
-    const routingClient = new RoutesClient();
-    /*const origin = 'New York, NY';
-    const destination = 'Los Angeles, CA';
-  
-    googleMapsClient.directions({
-      origin: origin,
-      destination: destination,
-      mode: 'driving', // You can set the travel mode (driving, walking, transit, etc.)
-    }, (err, response) => {
-      if (!err) {
-        res.json(response.json);
-      } else {
-        console.error(err);
-        res.status(500).json({ error: 'Error fetching directions' });
+app.get('/directions', async (req, res) => {
+    const routingClient = new RoutesClient({ apiKey: 'AIzaSyAzaxnuhcqrHyhCKGPsekHS-VC8lGqG7GY' });
+    const origin=  {
+        "address": "1800 Amphitheatre Parkway, Mountain View, CA 94043"
       }
-    });*/
-    callComputeRoutes();
-    res.send({status: 'success'})
-  });
-  async function callComputeRoutes() {
-    // Construct request
-    const request = {
-      origin,
-      destination,
-    };
+    const destination= {
+        "address": "Sloat Blvd &, Upper Great Hwy, San Francisco, CA 94132"
+      }
+
+    //let resp = axios.get('https://routes.googleapis.com/directions/v2:computeRoutes?key=AIzaSyAzaxnuhcqrHyhCKGPsekHS-VC8lGqG7GY')
   
-    // Run request
-    const response = await routingClient.computeRoutes(request);
-    console.log(response);
-  }
+      // Construct request for directions
+      const response = await routingClient.computeRoutes({
+        origin,
+        destination,
+        key: 'AIzaSyAzaxnuhcqrHyhCKGPsekHS-VC8lGqG7GY'
+        //mode: 'driving', // You can set the travel mode (driving, walking, transit, etc.)
+      });
+  
+      // Assuming the response structure has a json property containing the directions.
+      console.log(response)
+  });
