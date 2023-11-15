@@ -3,7 +3,7 @@ const axios = require('axios');
 
 const fs = require('fs')
 const {connection, connect, close } = require('./database_functions/connect')
-const { createAccount, login, pollCompletedRides } = require('./database_functions/queries')
+const { createAccount, login, pollCompletedRides, createNewRide } = require('./database_functions/queries')
 const {
     randomId, 
     loginHash, 
@@ -37,9 +37,10 @@ app.post('/account/create', async (req, res) => {
 
 
 
-app.get('/account/login', async (req, res) => {
-    const { username, password } = req.query
+app.post('/account/login', async (req, res) => {
+    const { username, password } = req.body
     const resp = await login( connection, username, passwordSalt(username, password) )
+
     if (!resp.length){
         res
             .status(400)
@@ -77,6 +78,28 @@ app.get('/rides/completed', (req, res) => {
     res.send({
         status: 'success',
         rides
+    })
+
+})
+
+app.get('/rides/create', async (req, res) => {
+    const { authorization } = req.headers
+    if (!verifyLoginHash(loginHashMap, authorization, new Date())){
+        res
+            .status(401)
+            .send("User not logged in")
+        return
+    }
+
+    //const { userId } = loginHashMap.get(authorization)
+    const {userId} = loginHashMap[authorization]
+    const rideId = randomId()
+    const { startPoint, destination, riders, costPerRider, pickUpDistance } = req.body
+    
+    let resp = await createNewRide(connection, rideId, userId, startPoint, destination, riders, costPerRider, pickUpDistance)
+    console.log( resp )
+    res.send({
+        status: 'success',
     })
 
 })

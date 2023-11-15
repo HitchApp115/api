@@ -1,8 +1,8 @@
 const createAccount = (connection, userid, username, email, password, phone, callback) => {
     connection.query(
         `INSERT INTO account (user_id, username, email, password, phone_num) VALUES (?, ?, ?, ?, ?)`,
-        [userid, username, email, password, phone],
-        (err, resp) => {
+         [userid, username, email, password, phone],
+         (err, resp) => {
             if (err) {
                 if (err.code === 'ER_DUP_ENTRY') {
                     // Check the error message for the column causing the duplicate entry
@@ -23,7 +23,7 @@ const createAccount = (connection, userid, username, email, password, phone, cal
                 callback(null, { status: 'success', response: resp });
             }
         }
-    );
+        );
 }
 
 
@@ -44,8 +44,26 @@ const login = async (connection, username, password) => {
 const pollCompletedRides = async (connection, userId) => {
     return new Promise((resolve) => {
         connection.query(
-           ``,
+           `SELECT * from completed_rides_by_rider WHERE rider_id=?`,
              [userId],
+             (err, resp) => {
+                console.log('err:', err)
+                console.log('resp:', resp)
+                resolve(resp)
+            }
+        )
+    })
+}
+
+const createNewRide = async (connection, ride_id, driver_id, start_point, driver_dest, riders, cost_per_rider, pickup_dist) => {
+    return new Promise((resolve) => {
+        // Ignoring requesting_rider because it should be handled by requested_rides table
+        connection.query(
+           `INSERT INTO pending_active_rides 
+                (ride_id, driver_id, start_point, driver_dest, riders, cost_per_rider, pickup_dist) 
+                VALUES 
+                (?, ?, ?, ?, ?, ?, ?)`,
+             [ride_id, driver_id, start_point, driver_dest, riders, cost_per_rider, pickup_dist],
              (err, resp) => {
                 console.log('err:', err)
                 console.log('resp:', resp)
@@ -58,5 +76,6 @@ const pollCompletedRides = async (connection, userId) => {
 module.exports = {
     createAccount,
     login,
-    pollCompletedRides
+    pollCompletedRides,
+    createNewRide
 }
