@@ -103,7 +103,7 @@ app.get('/rides/create', async (req, res) => {
     })
 
 })
-
+//startPoint is in format Name:Lat,Lon
 app.get('/rides/view', async(req, res) => {
   const {startPoint} = req.body
 
