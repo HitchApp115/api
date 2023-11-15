@@ -109,7 +109,7 @@ app.get('/rides/view', async(req, res) => {
 
   let resp = await getNearbyRides(connection, startPoint)
   console.log(resp)
-  res.sent({
+  res.send({
     status: 'success'
   })
 })
