@@ -21,9 +21,22 @@ const verifyLoginHash = (loginHashMap, loginToken, currentDate) => {
     return new Date(loginHashMap[loginToken]?.expiry) >= currentDate
 }
 
+const getRoutesJSON = async (origin, destination) => {
+    const response = await axios.get('https://maps.googleapis.com/maps/api/directions/json', {
+        params: {
+          origin,
+          destination,
+          key: "AIzaSyDP9-25-Nle5WIbfouhwceH0Egiw8KgShA",
+        },
+      });
+
+      return response
+}
+
 module.exports = {
     randomId,
     loginHash,
     passwordSalt,
-    verifyLoginHash
+    verifyLoginHash,
+    getRoutesJSON
 }
