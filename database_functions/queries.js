@@ -80,21 +80,23 @@ const getNearbyRides = async(connection, user_point) => {
     let userLat = ar[0]
     let userLon = ar[1]
 
-    connection.query(
-        `Select * from pending_active_rides WHERE pickup_dist < GET_DIST(?, ?, start_point)`,
-        [userLat, userLon],
-        (err, resp) => {
-            console.log('err:', err)
-            console.log('resp:', resp)
-            resolve(resp)
-        }
-    )
-
+    return new Promise((resolve) => {
+        connection.query(
+            `Select * from pending_active_rides WHERE pickup_dist > GET_DIST(?, ?, start_point)`,
+            [userLat, userLon],
+            (err, resp) => {
+                console.log('err:', err)
+                console.log('resp:', resp)
+                resolve(resp)
+            }
+        )
+    })
 }
 
 module.exports = {
     createAccount,
     login,
     pollCompletedRides,
-    createNewRide
+    createNewRide,
+    getNearbyRides
 }

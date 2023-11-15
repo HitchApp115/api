@@ -3,13 +3,13 @@ const axios = require('axios');
 
 const fs = require('fs')
 const {connection, connect, close } = require('./database_functions/connect')
-const { createAccount, login, pollCompletedRides, createNewRide } = require('./database_functions/queries')
+const { createAccount, login, pollCompletedRides, createNewRide, getNearbyRides } = require('./database_functions/queries')
 const {
     randomId, 
     loginHash, 
     passwordSalt, 
     verifyLoginHash,
-    getRoutesJSON,
+    getRoutesJSON
 } = require('./helpers')
 const loginHashMap = JSON.parse(fs.readFileSync('logins.json')) // new Map()
 
@@ -102,6 +102,16 @@ app.get('/rides/create', async (req, res) => {
         status: 'success',
     })
 
+})
+
+app.get('/rides/view', async(req, res) => {
+  const {startPoint} = req.body
+
+  let resp = await getNearbyRides(connection, startPoint)
+  console.log(resp)
+  res.sent({
+    status: 'success'
+  })
 })
 
 app.get('/directions', async (req, res) => {
