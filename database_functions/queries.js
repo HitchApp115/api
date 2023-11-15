@@ -73,6 +73,10 @@ const createNewRide = async (connection, ride_id, driver_id, start_point, driver
     })
 }
 
+const getNearbyRides = async(connection, user_point) => {
+    
+}
+
 module.exports = {
     createAccount,
     login,

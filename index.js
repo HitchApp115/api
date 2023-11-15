@@ -8,7 +8,8 @@ const {
     randomId, 
     loginHash, 
     passwordSalt, 
-    verifyLoginHash 
+    verifyLoginHash,
+    getRoutesJSON
 } = require('./helpers')
 
 const loginHashMap = JSON.parse(fs.readFileSync('logins.json')) // new Map()
