@@ -127,7 +127,35 @@ app.get('/directions', async (req, res) => {
       console.error(error);
       res.status(500).json({ error: 'An error occurred while fetching directions.' });
     }
-  });
+});
+
+
+
+app.get('/driver/info', async (req, res) => {
+    const { authorization } = req.headers;
+
+    
+  if (!verifyLoginHash(loginHashMap, authorization, new Date())) {
+      res.status(401).send("User not logged in");
+      return;
+  }
+
+  const { userId } = loginHashMap[authorization];
+
+  try {
+      const driverInfo = await getDriverInfo(connection, userId);
+      res.send({
+          status: 'success',
+          driverInfo
+      });
+  } catch (error) {
+      console.error('Error fetching driver information:', error);
+      res.status(500).send({
+          status: 'error',
+          message: 'Internal server error'
+      });
+  }
+})
 
 
 app.listen(port, () => {
