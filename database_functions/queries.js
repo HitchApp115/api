@@ -73,6 +73,19 @@ const createNewRide = async (connection, ride_id, driver_id, start_point, driver
     })
 }
 
+const createDriverInfo = async (connection, driverId, carModel, licensePlate, license, carYear, seatCount, carColor, driverPicture, insurance, residency, inspectionForm) => {
+    return new Promise((resolve) => {
+        connection.query(
+            [driverId, carModel, licensePlate, license, carYear, seatCount, carColor, driverPicture, insurance, residency, inspectionForm],
+            (err, resp) => {
+                console.log('err:', err);
+                console.log('resp:', resp);
+                resolve(resp);
+            }
+        );
+    });
+};
+
 module.exports = {
     createAccount,
     login,
