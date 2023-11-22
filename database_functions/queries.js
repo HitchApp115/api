@@ -73,30 +73,39 @@ const createNewRide = async (connection, ride_id, driver_id, start_point, driver
     })
 }
 
-//user_point is in format Name:Lat,Lon      maxPrice format is just an int
-const getNearbyRides = async(connection, user_point, maxPrice) => {
-    let latLon = user_point.split(":")[1] //this is probably slow lmao
-    let ar = latLon.split(",")
-    let userLat = ar[0]
-    let userLon = ar[1]
-
+const createDriverInfo = async (connection, driverId, carModel, licensePlate, license, carYear, seatCount, carColor, driverPicture, insurance, residency, inspectionForm) => {
     return new Promise((resolve) => {
         connection.query(
-            `Select * from pending_active_rides WHERE pickup_dist > GET_DIST(?, ?, start_point) AND cost_per_rider <= ?`,
-            [userLat, userLon, maxPrice],
+            [driverId, carModel, licensePlate, license, carYear, seatCount, carColor, driverPicture, insurance, residency, inspectionForm],
             (err, resp) => {
-                console.log('err:', err)
-                console.log('resp:', resp)
-                resolve(resp)
+                console.log('err:', err);
+                console.log('resp:', resp);
+                resolve(resp);
             }
-        )
-    })
-}
+        );
+    });
+};
+
+const createDriverInfoNOBLOB = async (connection, driverId, carModel, licensePlate, license, carYear, seatCount, carColor, insurance, residency) => {
+    return new Promise((resolve) => {
+        connection.query(
+            `INSERT INTO driver_info 
+                (driver_id, car_model, license_plate, license, car_year, seat_count, car_color, insurance, residency) 
+                VALUES 
+                (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+            [driverId, carModel, licensePlate, license, carYear, seatCount, carColor, insurance, residency],
+            (err, resp) => {
+                console.log('err:', err);
+                console.log('resp:', resp);
+                resolve(resp);
+            }
+        );
+    });
+};
 
 module.exports = {
     createAccount,
     login,
     pollCompletedRides,
-    createNewRide,
-    getNearbyRides
+    createNewRide
 }
