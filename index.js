@@ -3,7 +3,14 @@ const axios = require('axios');
 
 const fs = require('fs')
 const {connection, connect, close } = require('./database_functions/connect')
-const { createAccount, login, pollCompletedRides, createNewRide } = require('./database_functions/queries')
+const { 
+    createAccount, 
+    login, 
+    pollCompletedRides, 
+    createNewRide,
+    createDriverInfo,
+    createDriverInfoNOBLOB
+ } = require('./database_functions/queries')
 const {
     randomId, 
     loginHash, 
@@ -35,7 +42,19 @@ app.post('/account/create', async (req, res) => {
   });
 });
 
+app.post('/account/logout', (req, res) => {
+    const { authorization } = req.headers
+    if (!verifyLoginHash(loginHashMap, authorization, new Date())){
+        res
+            .status(401)
+            .send("User not logged in")
+        return
+    }
+    delete loginHashMap[authorization]
+    fs.writeFileSync('logins.json', JSON.stringify(loginHashMap))
+    res.send({status: 'success'})
 
+})
 
 app.post('/account/login', async (req, res) => {
     const { username, password } = req.body
@@ -157,6 +176,35 @@ app.get('/driver/info', async (req, res) => {
   }
 })
 
+
+// Need to add way to post driverPhoto and insectionForm for the database
+// Unsur how to download images in the best way at the moment
+app.post('/driver/info', async (req, res) => {
+    const { authorization } = req.headers;
+
+    
+  if (!verifyLoginHash(loginHashMap, authorization, new Date())) {
+      res.status(401).send("User not logged in");
+      return;
+  }
+
+  const { userId } = loginHashMap[authorization];
+
+  const { carColor, carModel, carYear, seatCount, insurance, licensePlate, license, residencyState, driverPhoto, inspectionForm} = req.body
+
+  try {
+      const driverInfo = await createDriverInfoNOBLOB(connection, userId, carModel, licensePlate, license, carYear, seatCount, carColor, driverPhoto, insurance, residencyState, inspectionForm);
+      res.send({
+          status: 'success'
+      });
+  } catch (error) {
+      console.error('Error fetching driver information:', error);
+      res.status(500).send({
+          status: 'error',
+          message: 'Internal server error'
+      });
+  }
+})
 
 app.listen(port, () => {
   console.log(`Server running at http://localhost:${port}`);

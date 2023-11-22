@@ -86,9 +86,28 @@ const createDriverInfo = async (connection, driverId, carModel, licensePlate, li
     });
 };
 
+const createDriverInfoNOBLOB = async (connection, driverId, carModel, licensePlate, license, carYear, seatCount, carColor, insurance, residency) => {
+    return new Promise((resolve) => {
+        connection.query(
+            `INSERT INTO driver_info 
+                (driver_id, car_model, license_plate, license, car_year, seat_count, car_color, insurance, residency) 
+                VALUES 
+                (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+            [driverId, carModel, licensePlate, license, carYear, seatCount, carColor, insurance, residency],
+            (err, resp) => {
+                console.log('err:', err);
+                console.log('resp:', resp);
+                resolve(resp);
+            }
+        );
+    });
+};
+
 module.exports = {
     createAccount,
     login,
     pollCompletedRides,
-    createNewRide
+    createNewRide,
+    createDriverInfo,
+    createDriverInfoNOBLOB
 }
