@@ -182,7 +182,6 @@ app.get('/driver/info', async (req, res) => {
 app.post('/driver/info', async (req, res) => {
     const { authorization } = req.headers;
 
-    
   if (!verifyLoginHash(loginHashMap, authorization, new Date())) {
       res.status(401).send("User not logged in");
       return;
