@@ -3,11 +3,11 @@ const axios = require('axios');
 
 const fs = require('fs')
 const {connection, connect, close } = require('./database_functions/connect')
-const { createAccount, login, pollCompletedRides, createNewRide, getNearbyRides } = require('./database_functions/queries')
 const { 
     createAccount, 
     login, 
-    pollCompletedRides, 
+    pollCompletedRides,
+    getNearbyRides,
     createNewRide,
     createDriverInfo,
     createDriverInfoNOBLOB
