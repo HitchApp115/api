@@ -1,7 +1,8 @@
 const express = require('express');
 const axios = require('axios');
-
 const fs = require('fs')
+const multer = require('multer')
+
 const {connection, connect, close } = require('./database_functions/connect')
 const { 
     createAccount, 
@@ -10,7 +11,6 @@ const {
     getNearbyRides,
     createNewRide,
     createDriverInfo,
-    createDriverInfoNOBLOB
  } = require('./database_functions/queries')
 const {
     randomId, 
@@ -23,6 +23,8 @@ const loginHashMap = JSON.parse(fs.readFileSync('logins.json')) // new Map()
 
 const app = express();
 const port = process.env.PORT || 3000;
+const storage = multer.memoryStorage();
+const upload = multer({ storage: storage });
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -182,9 +184,8 @@ app.get('/driver/info', async (req, res) => {
 })
 
 
-// Need to add way to post driverPhoto and insectionForm for the database
-// Unsur how to download images in the best way at the moment
-app.post('/driver/info', async (req, res) => {
+// 
+app.post('/driver/info', upload.fields([{ name: 'driverPhoto', maxCount: 1 }, { name: 'inspectionForm', maxCount: 1 }]), async (req, res) => {
     const { authorization } = req.headers;
 
   if (!verifyLoginHash(loginHashMap, authorization, new Date())) {
@@ -194,10 +195,13 @@ app.post('/driver/info', async (req, res) => {
 
   const { userId } = loginHashMap[authorization];
 
-  const { carColor, carModel, carYear, seatCount, insurance, licensePlate, license, residencyState, driverPhoto, inspectionForm} = req.body
+  const { carColor, carModel, carYear, seatCount, insurance, licensePlate, license, residencyState} = req.body
+
+  const driverPhoto = req.files['driverPhoto'][0].buffer;
+  const inspectionForm = req.files['inspectionForm'][0].buffer;
 
   try {
-      const driverInfo = await createDriverInfoNOBLOB(connection, userId, carModel, licensePlate, license, carYear, seatCount, carColor, driverPhoto, insurance, residencyState, inspectionForm);
+      const driverInfo = await createDriverInfo(connection, userId, carModel, licensePlate, license, carYear, seatCount, carColor, driverPhoto, insurance, residencyState, inspectionForm);
       res.send({
           status: 'success'
       });
@@ -205,7 +209,7 @@ app.post('/driver/info', async (req, res) => {
       console.error('Error fetching driver information:', error);
       res.status(500).send({
           status: 'error',
-          message: 'Internal server error'
+          message: 'Internal server error'  
       });
   }
 })

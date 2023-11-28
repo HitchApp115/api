@@ -96,24 +96,11 @@ const createNewRide = async (connection, ride_id, driver_id, start_point, driver
 const createDriverInfo = async (connection, driverId, carModel, licensePlate, license, carYear, seatCount, carColor, driverPicture, insurance, residency, inspectionForm) => {
     return new Promise((resolve) => {
         connection.query(
-            [driverId, carModel, licensePlate, license, carYear, seatCount, carColor, driverPicture, insurance, residency, inspectionForm],
-            (err, resp) => {
-                console.log('err:', err);
-                console.log('resp:', resp);
-                resolve(resp);
-            }
-        );
-    });
-};
-
-const createDriverInfoNOBLOB = async (connection, driverId, carModel, licensePlate, license, carYear, seatCount, carColor, insurance, residency) => {
-    return new Promise((resolve) => {
-        connection.query(
             `INSERT INTO driver_info 
-                (driver_id, car_model, license_plate, license, car_year, seat_count, car_color, insurance, residency) 
-                VALUES 
-                (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
-            [driverId, carModel, licensePlate, license, carYear, seatCount, carColor, insurance, residency],
+            (driver_id, car_model, license_plate, license, car_year, seat_count, car_color, driver_picture, insurance, residency, inspection_form) 
+            VALUES 
+            (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+            [driverId, carModel, licensePlate, license, carYear, seatCount, carColor, driverPicture, insurance, residency, inspectionForm],
             (err, resp) => {
                 console.log('err:', err);
                 console.log('resp:', resp);
@@ -129,6 +116,5 @@ module.exports = {
     pollCompletedRides,
     getNearbyRides,
     createNewRide,
-    createDriverInfo,
-    createDriverInfoNOBLOB
+    createDriverInfo
 }
