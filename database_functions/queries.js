@@ -93,14 +93,14 @@ const createNewRide = async (connection, ride_id, driver_id, start_point, driver
     })
 }
 
-const createDriverInfo = async (connection, driverId, carModel, licensePlate, license, carYear, seatCount, carColor, driverPicture, insurance, residency, inspectionForm) => {
+const createDriverInfo = async (connection, driverId, carMake, carModel, licensePlate, license, carYear, seatCount, carColor, driverPicture, insurance, residency, inspectionForm) => {
     return new Promise((resolve) => {
         connection.query(
             `INSERT INTO driver_info 
-            (driver_id, car_model, license_plate, license, car_year, seat_count, car_color, driver_picture, insurance, residency, inspection_form) 
+            (driver_id, car_model, license_plate, license, car_make ,car_year, seat_count, car_color, driver_picture, insurance, residency, inspection_form) 
             VALUES 
-            (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
-            [driverId, carModel, licensePlate, license, carYear, seatCount, carColor, driverPicture, insurance, residency, inspectionForm],
+            (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+            [driverId, carModel, licensePlate, license, carMake, carYear, seatCount, carColor, driverPicture, insurance, residency, inspectionForm],
             (err, resp) => {
                 console.log('err:', err);
                 console.log('resp:', resp);

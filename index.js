@@ -195,13 +195,13 @@ app.post('/driver/info', upload.fields([{ name: 'driverPhoto', maxCount: 1 }, { 
 
   const { userId } = loginHashMap[authorization];
 
-  const { carColor, carModel, carYear, seatCount, insurance, licensePlate, license, residencyState} = req.body
+  const { carColor, carMake, carModel, carYear, seatCount, insurance, licensePlate, license, residencyState} = req.body
 
   const driverPhoto = req.files['driverPhoto'][0].buffer;
   const inspectionForm = req.files['inspectionForm'][0].buffer;
 
   try {
-      const driverInfo = await createDriverInfo(connection, userId, carModel, licensePlate, license, carYear, seatCount, carColor, driverPhoto, insurance, residencyState, inspectionForm);
+      const driverInfo = await createDriverInfo(connection, userId, carMake, carModel, licensePlate, license, carYear, seatCount, carColor, driverPhoto, insurance, residencyState, inspectionForm);
       res.send({
           status: 'success'
       });
