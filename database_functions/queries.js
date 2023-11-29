@@ -66,12 +66,14 @@ const pollCompletedRides = async (connection, userId) => {
 //user_point: string in format Name:Lat,Lon
 //maxPrice: double
 const getNearbyRides = async(connection, user_point, maxPrice) => {
-    let latLon = user_point.split(":")[1] //this is probably slow lmao
+    //split the user_point to get the name, lattitude and longigtude
+    let latLon = user_point.split(":")[1] //this is probably slow
     let ar = latLon.split(",")
     let userLat = ar[0]
     let userLon = ar[1]
 
     return new Promise((resolve) => {
+        //filter database for pickup_dist AND cost_per_rider, TBD to refactor
         connection.query(
             `Select * from pending_active_rides WHERE pickup_dist > GET_DIST(?, ?, start_point) AND cost_per_rider <= ?`,
             [userLat, userLon, maxPrice],
@@ -121,14 +123,14 @@ const createNewRide = async (connection, ride_id, driver_id, start_point, driver
 //insurance: ???
 //residency: string
 //inspectionForm: ???
-const createDriverInfo = async (connection, driverId, carMake, carModel, licensePlate, license, carYear, seatCount, carColor, driverPicture, insurance, residency, inspectionForm) => {
+async function createDriverInfo(connection, driver_id, carMake, carModel, licensePlate, license, carYear, seatCount, carColor, driverPicture, insurance, residency, inspectionForm) {
     return new Promise((resolve) => {
         connection.query(
             `INSERT INTO driver_info 
             (driver_id, car_model, license_plate, license, car_make ,car_year, seat_count, car_color, driver_picture, insurance, residency, inspection_form) 
             VALUES 
             (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
-            [driverId, carModel, licensePlate, license, carMake, carYear, seatCount, carColor, driverPicture, insurance, residency, inspectionForm],
+            [driver_id, carModel, licensePlate, license, carMake, carYear, seatCount, carColor, driverPicture, insurance, residency, inspectionForm],
             (err, resp) => {
                 console.log('err:', err);
                 console.log('resp:', resp);
@@ -136,7 +138,7 @@ const createDriverInfo = async (connection, driverId, carMake, carModel, license
             }
         );
     });
-};
+}
 
 module.exports = {
     createAccount,
