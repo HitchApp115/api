@@ -1,3 +1,10 @@
+//connection: MYSQL instance
+//userID: int
+//username: string
+//email: string
+//password: string
+//phone: int
+//callback:???
 const createAccount = (connection, userid, username, email, password, phone, callback) => {
     connection.query(
         `INSERT INTO account (user_id, username, email, password, phone_num) VALUES (?, ?, ?, ?, ?)`,
@@ -55,7 +62,9 @@ const pollCompletedRides = async (connection, userId) => {
     })
 }
 
-//user_point is in format Name:Lat,Lon      maxPrice format is just an int
+//connection: MYSQL instance
+//user_point: string in format Name:Lat,Lon
+//maxPrice: double
 const getNearbyRides = async(connection, user_point, maxPrice) => {
     let latLon = user_point.split(":")[1] //this is probably slow lmao
     let ar = latLon.split(",")
@@ -75,6 +84,13 @@ const getNearbyRides = async(connection, user_point, maxPrice) => {
     })
 }
 
+//ride_id: int
+//driver_id: int
+//start_point: string in format Name:Lat,Lon
+//driver_dest: string in format Name:Lat,Lon
+//riders: int
+//cost_per_rider: double
+//pickup_dist: double
 const createNewRide = async (connection, ride_id, driver_id, start_point, driver_dest, riders, cost_per_rider, pickup_dist) => {
     return new Promise((resolve) => {
         // Ignoring requesting_rider because it should be handled by requested_rides table
@@ -93,6 +109,18 @@ const createNewRide = async (connection, ride_id, driver_id, start_point, driver
     })
 }
 
+//connection: MYSQL instance
+//driver_id: int
+//carMake: string
+//licensePlate: string
+//license: ???
+//carYear: int
+//seatCount: int
+//carColor: ???
+//driverPicture: ???
+//insurance: ???
+//residency: string
+//inspectionForm: ???
 const createDriverInfo = async (connection, driverId, carMake, carModel, licensePlate, license, carYear, seatCount, carColor, driverPicture, insurance, residency, inspectionForm) => {
     return new Promise((resolve) => {
         connection.query(
