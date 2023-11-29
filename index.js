@@ -233,7 +233,7 @@ app.post('/driver/info', upload.fields([{ name: 'driverPhoto', maxCount: 1 }, { 
   }
 })
 
-app.listen(port, () => {
-  console.log(`Server running at http://localhost:${port}`);
-});
+// app.listen(port, () => {
+//   console.log(`Server running at http://localhost:${port}`);
+// });
 
