@@ -148,30 +148,34 @@ async function createDriverInfo(connection, driver_id, carMake, carModel, licens
 //remove request from the database
 //if acceptRider is TRUE: assign the rider to the ride, then decriment the number of seats in the active ride
 
-async function resolveRiderRequest( rideID, riderID, acceptRider ) {
-    connection.query(
-        'DROP TABLE request WHERE rideID == ? AND riderID == ?',
-        [rideID, riderID],
-        (err, resp) => {
-            console.log('err:', err)
-            console.log('resp:', resp)
-            resolve(resp)
+async function resolveRiderRequest(connection, rideID, riderID, acceptRider) {
+    return new Promise((resolve, reject) => {
+        if (acceptRider) {
+            connection.query(
+                'CALL ProcessRideRequest(?, ?)',
+                [rideID, riderID],
+                (err, resp) => {
+                    if (err) {
+                        console.error('Error:', err);
+                        reject(err);
+                    } else {
+                        console.log('Response:', resp);
+                        resolve(resp);
+                    }
+                }
+            );
+        } else {
+            connection.query(
+                'DELETE TABLE ride_requests WHERE rideID == ? AND riderID == ?',
+                [rideID, riderID],
+                (err, resp) => {
+                    console.log('err:', err)
+                    console.log('resp:', resp)
+                    resolve(resp)
+                }
+            )
         }
-    )
-
-    //find the table for the rideID, assign the user, decriment available seats
-    /*if (acceptRider == true) {
-        connection.query(
-            'UPDATE ride request WHERE rideID == ? AND riderID == ?',
-            [rideID, riderID],
-            (err, resp) => {
-                console.log('err:', err)
-                console.log('resp:', resp)
-                resolve(resp)
-            }
-        )
-    
-    }*/
+    });
 }
 
 module.exports = {
@@ -180,5 +184,6 @@ module.exports = {
     pollCompletedRides,
     getNearbyRides,
     createNewRide,
-    createDriverInfo
+    createDriverInfo,
+    resolveRiderRequest
 }

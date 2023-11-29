@@ -11,6 +11,7 @@ const {
     getNearbyRides,
     createNewRide,
     createDriverInfo,
+    resolveRiderRequest
  } = require('./database_functions/queries')
 const {
     randomId, 
@@ -104,7 +105,7 @@ app.get('/rides/completed', (req, res) => {
 
 })
 
-app.get('/rides/create', async (req, res) => {
+app.post('/rides/create', async (req, res) => {
     const { authorization } = req.headers
     if (!verifyLoginHash(loginHashMap, authorization, new Date())){
         res
@@ -189,7 +190,10 @@ app.post('/rides/resolveRiderRequest', async (req, res) =>  {
     //acceptRider: boolean that says if the driver wants to accept the rider
     const { rideID, riderID, acceptRider } = req.body
     try {
-        let resp = await resolveRiderRequest(rideID, riderID, acceptRider)
+        let resp = await resolveRiderRequest(connection, rideID, riderID, acceptRider)
+        res.send({
+            status: 'success'
+        });
     } catch (error) {
         console.error('Error resolving rider request information:', error)
         res.status(500).send({
