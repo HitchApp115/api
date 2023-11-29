@@ -121,11 +121,11 @@ app.post('/rides/create', async (req, res) => {
     const [startPointLat, startPointLong] = [startPoint.latitude, startPoint.longitude]
     const [endPointLat, endPointLong] = [destination.latitude, destination.longitude]
     
-    let resp = await createNewRide(connection, rideId, userId, `StartPoint:${startPointLat}:${startPointLong}`, `EndPoint:${endPointLat}:${endPointLong}`, riders, costPerRider, pickUpDistance)
+    let response = await createNewRide(connection, rideId, userId, `StartPoint:${startPointLat}:${startPointLong}`, `EndPoint:${endPointLat}:${endPointLong}`, riders, costPerRider, pickUpDistance)
     res.send({
         status: 'success',
         rideId, userId, start: `StartPoint:${startPointLat}:${startPointLong}`, end: `EndPoint:${endPointLat}:${endPointLong}`, riders, costPerRider, pickUpDistance,
-        sql: resp
+        sql: response
     })
 
 })
