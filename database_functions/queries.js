@@ -62,6 +62,11 @@ const pollCompletedRides = async (connection, userId) => {
     })
 }
 
+//need functions to get individual columns from the table
+const getNumRiders = async(ride_id) => {
+    
+}
+
 //connection: MYSQL instance
 //user_point: string in format Name:Lat,Lon
 //maxPrice: double
