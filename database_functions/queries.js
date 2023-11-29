@@ -140,6 +140,35 @@ async function createDriverInfo(connection, driver_id, carMake, carModel, licens
     });
 }
 
+//remove request from the database
+//if acceptRider is TRUE: assign the rider to the ride, then decriment the number of seats in the active ride
+
+async function resolveRiderRequest( rideID, riderID, acceptRider ) {
+    connection.query(
+        'DROP TABLE request WHERE rideID == ? AND riderID == ?',
+        [rideID, riderID],
+        (err, resp) => {
+            console.log('err:', err)
+            console.log('resp:', resp)
+            resolve(resp)
+        }
+    )
+
+    //find the table for the rideID, assign the user, decriment available seats
+    /*if (acceptRider == true) {
+        connection.query(
+            'UPDATE ride request WHERE rideID == ? AND riderID == ?',
+            [rideID, riderID],
+            (err, resp) => {
+                console.log('err:', err)
+                console.log('resp:', resp)
+                resolve(resp)
+            }
+        )
+    
+    }*/
+}
+
 module.exports = {
     createAccount,
     login,

@@ -125,7 +125,8 @@ app.get('/rides/create', async (req, res) => {
     })
 
 })
-//startPoint is in format Name:Lat,Lon    maxPrice is in format of an int
+//startPoint: string in Name:Lat,Lon
+//maxPrice: float
 app.get('/rides/view', async(req, res) => {
   const {startPoint} = req.body
   const {maxPrice} = req.body
@@ -183,8 +184,23 @@ app.get('/driver/info', async (req, res) => {
   }
 })
 
+app.post('/rides/resolveRiderRequest', async (req, res) =>  {
+    //riderID: int
+    //acceptRider: boolean that says if the driver wants to accept the rider
+    const { rideID, riderID, acceptRider } = req.body
+    try {
+        let resp = await resolveRiderRequest(rideID, riderID, acceptRider)
+    } catch (error) {
+        console.error('Error resolving rider request information:', error)
+        res.status(500).send({
+            status: 'error',
+            message: 'Internal server error'
+        });
+    }
+})
 
-// 
+
+
 app.post('/driver/info', upload.fields([{ name: 'driverPhoto', maxCount: 1 }, { name: 'inspectionForm', maxCount: 1 }]), async (req, res) => {
     const { authorization } = req.headers;
 
