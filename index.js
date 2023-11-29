@@ -104,7 +104,7 @@ app.get('/rides/completed', (req, res) => {
 
 })
 
-app.get('/rides/create', async (req, res) => {
+app.post('/rides/create', async (req, res) => {
     const { authorization } = req.headers
     if (!verifyLoginHash(loginHashMap, authorization, new Date())){
         res
