@@ -118,11 +118,15 @@ app.post('/rides/create', async (req, res) => {
     const {userId} = loginHashMap[authorization]
     const rideId = randomId()
     const { startPoint, destination, riders, costPerRider, pickUpDistance } = req.body
+
+    const [startPointLat, startPointLong] = [startPoint.latitude, startPoint.longitude]
+    const [endPointLat, endPointLong] = [destination.latitude, destination.longitude]
     
-    let resp = await createNewRide(connection, rideId, userId, startPoint, destination, riders, costPerRider, pickUpDistance)
-    console.log( resp )
+    let response = await createNewRide(connection, rideId, userId, `StartPoint:${startPointLat}:${startPointLong}`, `EndPoint:${endPointLat}:${endPointLong}`, riders, costPerRider, pickUpDistance)
     res.send({
         status: 'success',
+        rideId, userId, start: `StartPoint:${startPointLat}:${startPointLong}`, end: `EndPoint:${endPointLat}:${endPointLong}`, riders, costPerRider, pickUpDistance,
+        sql: response
     })
 
 })
