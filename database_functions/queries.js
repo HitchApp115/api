@@ -159,8 +159,16 @@ async function resolveRiderRequest(connection, rideID, riderID, acceptRider) {
                         console.error('Error:', err);
                         reject(err);
                     } else {
+                        const res = resp[0][0].result; // Assuming the result is in the first row of the first result set
                         console.log('Response:', resp);
-                        resolve(resp);
+                        
+                        if (res === 'Ride is full') {
+                            resolve(res);
+                        } else if (res === 'Successfully added rider') {
+                            resolve(res);
+                        } else {
+                            reject('Unknown result');
+                        }
                     }
                 }
             );

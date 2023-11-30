@@ -189,14 +189,24 @@ app.get('/driver/info', async (req, res) => {
   }
 })
 
+//rideID: int
+//riderID: int
+//acceptRider: boolean (0 or 1) that says if the driver wants to accept the rider
 app.post('/rides/resolveRiderRequest', async (req, res) =>  {
-    //riderID: int
-    //acceptRider: boolean that says if the driver wants to accept the rider
+    const { authorization } = req.headers
+    if (!verifyLoginHash(loginHashMap, authorization, new Date())){
+        res
+            .status(401)
+            .send("User not logged in")
+        return
+    }
+
     const { rideID, riderID, acceptRider } = req.body
     try {
         let resp = await resolveRiderRequest(connection, rideID, riderID, acceptRider)
         res.send({
-            status: 'success'
+            status: 'success',
+            message: resp //'Successfully added rider' or 'Ride is full'
         });
     } catch (error) {
         console.error('Error resolving rider request information:', error)
