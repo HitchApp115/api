@@ -11,7 +11,8 @@ const {
     getNearbyRides,
     createNewRide,
     createDriverInfo,
-    resolveRiderRequest
+    resolveRiderRequest,
+    sendRiderRequest
  } = require('./database_functions/queries')
 const {
     randomId, 
@@ -190,7 +191,7 @@ app.get('/driver/info', async (req, res) => {
 })
 
 //rideID: int
-//riderID: int
+//riderID: int      ID belonging to the rider requesting to join
 //acceptRider: boolean (0 or 1) that says if the driver wants to accept the rider
 app.post('/rides/resolveRiderRequest', async (req, res) =>  {
     const { authorization } = req.headers
@@ -218,6 +219,33 @@ app.post('/rides/resolveRiderRequest', async (req, res) =>  {
 })
 
 
+// userID : INT
+// rideID : INT
+app.post('/rides/sendRiderRequest', async (req, res) => {
+    const { authorization } = req.headers
+    if (!verifyLoginHash(loginHashMap, authorization, new Date())){
+        res
+            .status(401)
+            .send("User not logged in")
+        return
+    }
+
+    const {userId} = loginHashMap[authorization]
+    const {rideId} = req.body
+    try {
+        const resp = await sendRiderRequest(connection, userId, rideId);
+        res.send({
+            status: 'success',
+            message: resp
+        });
+    } catch (error) {
+        console.error('Error sending rider request', error)
+        res.status(500).send({
+            status: 'error',
+            message: 'Internal server error'
+        });
+    }
+})
 
 app.post('/driver/info', upload.fields([{ name: 'driverPhoto', maxCount: 1 }, { name: 'inspectionForm', maxCount: 1 }]), async (req, res) => {
     const { authorization } = req.headers;
@@ -243,7 +271,7 @@ app.post('/driver/info', upload.fields([{ name: 'driverPhoto', maxCount: 1 }, { 
       console.error('Error fetching driver information:', error);
       res.status(500).send({
           status: 'error',
-          message: 'Internal server error'  
+          message: 'Internal server error'
       });
   }
 })

@@ -119,15 +119,16 @@ const createNewRide = async (connection, ride_id, driver_id, start_point, driver
 //connection: MYSQL instance
 //driver_id: int
 //carMake: string
+//carModel: string
 //licensePlate: string
-//license: ???
+//license: string
 //carYear: int
 //seatCount: int
-//carColor: ???
-//driverPicture: ???
-//insurance: ???
+//carColor: string
+//driverPicture: file
+//insurance: file
 //residency: string
-//inspectionForm: ???
+//inspectionForm: file
 async function createDriverInfo(connection, driver_id, carMake, carModel, licensePlate, license, carYear, seatCount, carColor, driverPicture, insurance, residency, inspectionForm) {
     return new Promise((resolve) => {
         connection.query(
@@ -145,41 +146,52 @@ async function createDriverInfo(connection, driver_id, carMake, carModel, licens
     });
 }
 
+async function sendRiderRequest(connection, userId, rideId) {
+    console.log(userId);
+
+    return new Promise((resolve) => {
+        connection.query(
+            `INSERT INTO ride_requests (rider_id, ride_id) 
+            VALUES(?, ?)`,
+            [userId, rideId],
+            (err, resp) => {
+                console.log('err:', err);
+                console.log('resp:', resp);
+                if (err && err.code === 'ER_DUP_ENTRY') {
+                    const errorCode = err.code;
+                    console.log('Error Code:', errorCode);
+                    resolve(err);
+                } else {
+                resolve(resp);
+                }
+            }
+        );
+    });
+}
+
+
 //remove request from the database
 //if acceptRider is TRUE: assign the rider to the ride, then decriment the number of seats in the active ride
 
 async function resolveRiderRequest(connection, rideID, riderID, acceptRider) {
-    return new Promise((resolve, reject) => {
+    return new Promise((resolve) => {
         if (acceptRider) {
             connection.query(
                 'CALL ProcessRideRequest(?, ?)',
                 [rideID, riderID],
                 (err, resp) => {
-                    if (err) {
-                        console.error('Error:', err);
-                        reject(err);
-                    } else {
-                        const res = resp[0][0].result; // Assuming the result is in the first row of the first result set
-                        console.log('Response:', resp);
-                        
-                        if (res === 'Ride is full') {
-                            resolve(res);
-                        } else if (res === 'Successfully added rider') {
-                            resolve(res);
-                        } else {
-                            reject('Unknown result');
-                        }
-                    }
-                }
-            );
-        } else {
+                    console.log('err:', err)
+                    console.log('resp:', resp);
+                    resolve(resp[0][0].result);
+                });
+            } else {
             connection.query(
-                'DELETE TABLE ride_requests WHERE rideID == ? AND riderID == ?',
+                'DELETE FROM ride_requests WHERE ride_id = ? AND rider_id = ?',
                 [rideID, riderID],
                 (err, resp) => {
                     console.log('err:', err)
                     console.log('resp:', resp)
-                    resolve(resp)
+                    resolve("Removed request")
                 }
             )
         }
@@ -193,5 +205,6 @@ module.exports = {
     getNearbyRides,
     createNewRide,
     createDriverInfo,
-    resolveRiderRequest
+    resolveRiderRequest,
+    sendRiderRequest
 }
