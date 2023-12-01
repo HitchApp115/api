@@ -13,7 +13,8 @@ const {
     createDriverInfo,
     resolveRiderRequest,
     sendRiderRequest,
-    getNumRiders
+    getNumRiders,
+    getCreatedRidesByDriver
  } = require('./database_functions/queries')
 const {
     randomId, 
@@ -135,18 +136,19 @@ app.post('/rides/create', async (req, res) => {
 //startPoint: string in StartPoint:Lat,Lon
 //maxPrice: float
 app.get('/rides/view', async(req, res) => {
-  const {startPoint} = req.body
-  const {maxPrice} = req.body
-  let resp = await getNearbyRides(connection, startPoint, maxPrice)
-  console.log(resp)
+  const {startPoint, maxPrice} = req.query;
+    // get should use req.query
+  let rides = await getNearbyRides(connection, startPoint, maxPrice)
   res.send({
-    status: 'success'
+    status: 'success',
+    rides
   })
 })
 
 //// NEW
 app.get('/rides/pending', async (req, res) => {
     const { authorization } = req.headers
+    console.log(authorization, loginHashMap[authorization])
     if (!verifyLoginHash(loginHashMap, authorization, new Date())){
         res
             .status(401)
@@ -157,13 +159,15 @@ app.get('/rides/pending', async (req, res) => {
     //const { userId } = loginHashMap.get(authorization)
     const {userId} = loginHashMap[authorization]
 
+    console.log(userId)
     //Get rides created by the userId
 
     let rides = await getCreatedRidesByDriver(connection, userId)
+    console.log(userId, rides)
 
     res.send({
         status: 'success',
-        rides
+        pendingRides: rides
     })
 
 
