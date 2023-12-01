@@ -39,9 +39,8 @@ app.use(express.urlencoded({ extended: true }));
 connect(connection)
 
 app.post('/account/create', async (req, res) => {
-  const { username, email, password, phone } = req.body;
-
-  createAccount(connection, randomId(), username, email, passwordSalt(username, password), phone, (err, result) => {
+  const {username, email, password, phone, first_name, last_name,} = req.body;
+  createAccount(connection, randomId(), username, email, passwordSalt(username, password), phone, first_name,last_name, (err, result) => {
       if (err) {
           // Handle the error case
           res.status(400).send(err);

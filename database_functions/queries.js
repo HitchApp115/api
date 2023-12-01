@@ -5,10 +5,10 @@
 //password: string
 //phone: int
 //callback: string
-const createAccount = (connection, userid, username, email, password, phone, callback) => {
+const createAccount = (connection, userid, username, email, password, phone, first_name, last_name, callback) => {
     connection.query(
-        `INSERT INTO account (user_id, username, email, password, phone_num) VALUES (?, ?, ?, ?, ?)`,
-         [userid, username, email, password, phone],
+        `INSERT INTO account (user_id, username, email, password, phone_num, first_name, last_name) VALUES (?, ?, ?, ?, ?, ?, ?)`,
+         [userid, username, email, password, phone, first_name, last_name],
          (err, resp) => {
             if (err) {
                 if (err.code === 'ER_DUP_ENTRY') {
