@@ -190,8 +190,8 @@ app.get('/driver/info', async (req, res) => {
   }
 })
 
-//rideID: int
-//riderID: int      ID belonging to the rider requesting to join
+//rideId: int
+//riderId: int      Id belonging to the rider requesting to join
 //acceptRider: boolean (0 or 1) that says if the driver wants to accept the rider
 app.post('/rides/resolveRiderRequest', async (req, res) =>  {
     const { authorization } = req.headers
@@ -202,9 +202,9 @@ app.post('/rides/resolveRiderRequest', async (req, res) =>  {
         return
     }
 
-    const { rideID, riderID, acceptRider } = req.body
+    const { rideId, riderId, acceptRider } = req.body
     try {
-        let resp = await resolveRiderRequest(connection, rideID, riderID, acceptRider)
+        let resp = await resolveRiderRequest(connection, rideId, riderId, acceptRider)
         res.send({
             status: 'success',
             message: resp //'Successfully added rider' or 'Ride is full'
@@ -219,8 +219,8 @@ app.post('/rides/resolveRiderRequest', async (req, res) =>  {
 })
 
 
-// userID : INT
-// rideID : INT
+// userId : INT
+// rideId : INT
 app.post('/rides/sendRiderRequest', async (req, res) => {
     const { authorization } = req.headers
     if (!verifyLoginHash(loginHashMap, authorization, new Date())){

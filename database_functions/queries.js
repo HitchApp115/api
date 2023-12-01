@@ -4,7 +4,7 @@
 //email: string
 //password: string
 //phone: int
-//callback:???
+//callback: string
 const createAccount = (connection, userid, username, email, password, phone, callback) => {
     connection.query(
         `INSERT INTO account (user_id, username, email, password, phone_num) VALUES (?, ?, ?, ?, ?)`,
@@ -146,9 +146,10 @@ async function createDriverInfo(connection, driver_id, carMake, carModel, licens
     });
 }
 
+//connection: MYSQL instance
+//userId: int
+//rideId: int
 async function sendRiderRequest(connection, userId, rideId) {
-    console.log(userId);
-
     return new Promise((resolve) => {
         connection.query(
             `INSERT INTO ride_requests (rider_id, ride_id) 
@@ -159,7 +160,7 @@ async function sendRiderRequest(connection, userId, rideId) {
                 console.log('resp:', resp);
                 if (err && err.code === 'ER_DUP_ENTRY') {
                     const errorCode = err.code;
-                    console.log('Error Code:', errorCode);
+                    console.log('Error:', errorCode);
                     resolve(err);
                 } else {
                 resolve(resp);
@@ -171,14 +172,18 @@ async function sendRiderRequest(connection, userId, rideId) {
 
 
 //remove request from the database
-//if acceptRider is TRUE: assign the rider to the ride, then decriment the number of seats in the active ride
+//if acceptRider is TRUE: assign the rider to the ride, then decrement the number of seats in the active ride
 
-async function resolveRiderRequest(connection, rideID, riderID, acceptRider) {
+//connection: MYSQL instance
+//rideId: int
+//riderId: int
+//acceptRider: boolean (0 or 1)
+async function resolveRiderRequest(connection, rideId, riderId, acceptRider) {
     return new Promise((resolve) => {
         if (acceptRider) {
             connection.query(
                 'CALL ProcessRideRequest(?, ?)',
-                [rideID, riderID],
+                [rideId, riderId],
                 (err, resp) => {
                     console.log('err:', err)
                     console.log('resp:', resp);
@@ -187,7 +192,7 @@ async function resolveRiderRequest(connection, rideID, riderID, acceptRider) {
             } else {
             connection.query(
                 'DELETE FROM ride_requests WHERE ride_id = ? AND rider_id = ?',
-                [rideID, riderID],
+                [rideId, riderId],
                 (err, resp) => {
                     console.log('err:', err)
                     console.log('resp:', resp)
