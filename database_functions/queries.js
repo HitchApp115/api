@@ -63,8 +63,18 @@ const pollCompletedRides = async (connection, userId) => {
 }
 
 //need functions to get individual columns from the table
-const getNumRiders = async(ride_id) => {
-    
+const getNumRiders = async(connection, ride_id) => {
+    return new Promise((resolve) => {
+        connection.query(
+            `SELECT riders FROM pending_active_rides WHERE ride_id = ?`,
+            [ride_id],
+            (err, resp) => {
+                console.log('err:', err)
+                console.log('resp:', resp)
+                resolve(resp)
+            }
+        )
+    })
 }
 
 //connection: MYSQL instance
@@ -80,7 +90,7 @@ const getNearbyRides = async(connection, user_point, maxPrice) => {
     return new Promise((resolve) => {
         //filter database for pickup_dist AND cost_per_rider, TBD to refactor
         connection.query(
-            `Select * from pending_active_rides WHERE pickup_dist > GET_DIST(?, ?, start_point) AND cost_per_rider <= ?`,
+            `SELECT * FROM pending_active_rides WHERE pickup_dist > GET_DIST(?, ?, start_point) AND cost_per_rider <= ?`,
             [userLat, userLon, maxPrice],
             (err, resp) => {
                 console.log('err:', err)
@@ -211,5 +221,6 @@ module.exports = {
     createNewRide,
     createDriverInfo,
     resolveRiderRequest,
-    sendRiderRequest
+    sendRiderRequest,
+    getNumRiders
 }
