@@ -151,8 +151,7 @@ app.get('/rides/pending', async (req, res) => {
     if (!verifyLoginHash(loginHashMap, authorization, new Date())){
         res
             .status(401)
-            .send(loginHashMap)
-            //.send("User not logged in")
+            .send("User not logged in")
         return
     }
 
@@ -165,7 +164,7 @@ app.get('/rides/pending', async (req, res) => {
 
     res.send({
         status: 'success',
-        rides
+        pendingRides: rides
     })
 
 
