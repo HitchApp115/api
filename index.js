@@ -161,7 +161,7 @@ app.get('/rides/pending', async (req, res) => {
     //Get rides created by the userId
 
     let rides = await getCreatedRidesByDriver(connection, userId)
-    console.log(rides)
+    console.log(userId, rides)
 
     res.send({
         status: 'success',
