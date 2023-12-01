@@ -12,7 +12,8 @@ const {
     createNewRide,
     createDriverInfo,
     resolveRiderRequest,
-    sendRiderRequest
+    sendRiderRequest,
+    getNumRiders
  } = require('./database_functions/queries')
 const {
     randomId, 
