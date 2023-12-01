@@ -136,10 +136,10 @@ app.post('/rides/create', async (req, res) => {
 app.get('/rides/view', async(req, res) => {
   const {startPoint} = req.body
   const {maxPrice} = req.body
-  let resp = await getNearbyRides(connection, startPoint, maxPrice)
-  console.log(resp)
+  let rides = await getNearbyRides(connection, startPoint, maxPrice)
   res.send({
-    status: 'success'
+    status: 'success',
+    rides
   })
 })
 
