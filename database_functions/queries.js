@@ -86,7 +86,6 @@ const getNearbyRides = async(connection, user_point, maxPrice) => {
     let ar = latLon.split(",")
     let userLat = ar[0]
     let userLon = ar[1]
-
     return new Promise((resolve) => {
         //filter database for pickup_dist AND cost_per_rider, TBD to refactor
         connection.query(

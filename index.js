@@ -128,19 +128,20 @@ app.post('/rides/create', async (req, res) => {
     const [startPointLat, startPointLong] = [startPoint.latitude, startPoint.longitude]
     const [endPointLat, endPointLong] = [destination.latitude, destination.longitude]
     
-    let response = await createNewRide(connection, rideId, userId, `StartPoint:${startPointLat}:${startPointLong}`, `EndPoint:${endPointLat}:${endPointLong}`, riders, costPerRider, pickUpDistance, rideStartTime)
+    let response = await createNewRide(connection, rideId, userId, `StartPoint:${startPointLat},${startPointLong}`, `EndPoint:${endPointLat},${endPointLong}`, riders, costPerRider, pickUpDistance, rideStartTime)
     res.send({
         status: 'success',
-        rideId, userId, start: `StartPoint:${startPointLat}:${startPointLong}`, end: `EndPoint:${endPointLat}:${endPointLong}`, riders, costPerRider, pickUpDistance,
+        rideId, userId, start: `StartPoint:${startPointLat},${startPointLong}`, end: `EndPoint:${endPointLat},${endPointLong}`, riders, costPerRider, pickUpDistance,
         sql: response
     })
 
 })
-//startPoint: string in Name:Lat,Lon
+//startPoint: string in StartPoint:Lat,Lon
 //maxPrice: float
 app.get('/rides/view', async(req, res) => {
-  const {startPoint} = req.body
-  const {maxPrice} = req.body
+  const {startPoint, maxPrice} = req.query;
+    // get should use req.query
+    console.log(startPoint)
   let rides = await getNearbyRides(connection, startPoint, maxPrice)
   res.send({
     status: 'success',
