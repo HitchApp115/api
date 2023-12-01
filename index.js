@@ -138,6 +138,7 @@ app.post('/rides/create', async (req, res) => {
 app.get('/rides/view', async(req, res) => {
   const {startPoint, maxPrice} = req.query;
     // get should use req.query
+    console.log(startPoint)
   let rides = await getNearbyRides(connection, startPoint, maxPrice)
   res.send({
     status: 'success',
