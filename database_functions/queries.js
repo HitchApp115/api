@@ -161,9 +161,9 @@ async function sendRiderRequest(connection, userId, rideId) {
                 if (err && err.code === 'ER_DUP_ENTRY') {
                     const errorCode = err.code;
                     console.log('Error:', errorCode);
-                    resolve(err);
+                    resolve('Preexisting user request');
                 } else {
-                resolve(resp);
+                resolve("Made request");
                 }
             }
         );

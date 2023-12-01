@@ -218,9 +218,7 @@ app.post('/rides/resolveRiderRequest', async (req, res) =>  {
     }
 })
 
-
-// userId : INT
-// rideId : INT
+//rideId: int
 app.post('/rides/sendRiderRequest', async (req, res) => {
     const { authorization } = req.headers
     if (!verifyLoginHash(loginHashMap, authorization, new Date())){
@@ -236,7 +234,7 @@ app.post('/rides/sendRiderRequest', async (req, res) => {
         const resp = await sendRiderRequest(connection, userId, rideId);
         res.send({
             status: 'success',
-            message: resp
+            message: resp // Will send 'Made request' or 'Preexisting user request' if duplication present
         });
     } catch (error) {
         console.error('Error sending rider request', error)
@@ -247,6 +245,7 @@ app.post('/rides/sendRiderRequest', async (req, res) => {
     }
 })
 
+// Content-type : multipart/form-data // I'm not too sure whats the formatting for this 
 app.post('/driver/info', upload.fields([{ name: 'driverPhoto', maxCount: 1 }, { name: 'inspectionForm', maxCount: 1 }]), async (req, res) => {
     const { authorization } = req.headers;
 
