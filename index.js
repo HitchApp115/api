@@ -148,6 +148,7 @@ app.get('/rides/view', async(req, res) => {
 //// NEW
 app.get('/rides/pending', async (req, res) => {
     const { authorization } = req.headers
+    console.log(authorization, loginHashMap[authorization])
     if (!verifyLoginHash(loginHashMap, authorization, new Date())){
         res
             .status(401)
@@ -158,6 +159,7 @@ app.get('/rides/pending', async (req, res) => {
     //const { userId } = loginHashMap.get(authorization)
     const {userId} = loginHashMap[authorization]
 
+    console.log(userId)
     //Get rides created by the userId
 
     let rides = await getCreatedRidesByDriver(connection, userId)
