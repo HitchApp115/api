@@ -234,5 +234,6 @@ module.exports = {
     createDriverInfo,
     resolveRiderRequest,
     sendRiderRequest,
-    getNumRiders
+    getNumRiders,
+    getCreatedRidesByDriver
 }
