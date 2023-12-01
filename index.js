@@ -118,12 +118,12 @@ app.post('/rides/create', async (req, res) => {
     //const { userId } = loginHashMap.get(authorization)
     const {userId} = loginHashMap[authorization]
     const rideId = randomId()
-    const { startPoint, destination, riders, costPerRider, pickUpDistance } = req.body
+    const { startPoint, destination, riders, costPerRider, pickUpDistance, rideStartTime } = req.body
 
     const [startPointLat, startPointLong] = [startPoint.latitude, startPoint.longitude]
     const [endPointLat, endPointLong] = [destination.latitude, destination.longitude]
     
-    let response = await createNewRide(connection, rideId, userId, `StartPoint:${startPointLat}:${startPointLong}`, `EndPoint:${endPointLat}:${endPointLong}`, riders, costPerRider, pickUpDistance)
+    let response = await createNewRide(connection, rideId, userId, `StartPoint:${startPointLat}:${startPointLong}`, `EndPoint:${endPointLat}:${endPointLong}`, riders, costPerRider, pickUpDistance, rideStartTime)
     res.send({
         status: 'success',
         rideId, userId, start: `StartPoint:${startPointLat}:${startPointLong}`, end: `EndPoint:${endPointLat}:${endPointLong}`, riders, costPerRider, pickUpDistance,
@@ -143,6 +143,22 @@ app.get('/rides/view', async(req, res) => {
   })
 })
 
+//// NEW
+app.get('/rides/pending', async (req, res) => {
+    const { authorization } = req.headers
+    if (!verifyLoginHash(loginHashMap, authorization, new Date())){
+        res
+            .status(401)
+            .send("User not logged in")
+        return
+    }
+
+    //const { userId } = loginHashMap.get(authorization)
+    const {userId} = loginHashMap[authorization]
+
+
+})
+////// NEW
 app.get('/directions', async (req, res) => {
     try {
       const { origin, destination } = req.query;

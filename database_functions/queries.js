@@ -98,15 +98,15 @@ const getNearbyRides = async(connection, user_point, maxPrice) => {
 //riders: int
 //cost_per_rider: double
 //pickup_dist: double
-const createNewRide = async (connection, ride_id, driver_id, start_point, driver_dest, riders, cost_per_rider, pickup_dist) => {
+const createNewRide = async (connection, ride_id, driver_id, start_point, driver_dest, riders, cost_per_rider, pickup_dist, rideStartTime) => {
     return new Promise((resolve) => {
         // Ignoring requesting_rider because it should be handled by requested_rides table
         connection.query(
            `INSERT INTO pending_active_rides 
-                (ride_id, driver_id, start_point, driver_dest, riders, cost_per_rider, pickup_dist) 
+                (ride_id, driver_id, start_point, driver_dest, maximum_riders, cost_per_rider, pickup_dist, ride_start_time) 
                 VALUES 
-                (?, ?, ?, ?, ?, ?, ?)`,
-             [ride_id, driver_id, start_point, driver_dest, riders, cost_per_rider, pickup_dist],
+                (?, ?, ?, ?, ?, ?, ?, ?)`,
+             [ride_id, driver_id, start_point, driver_dest, riders, cost_per_rider, pickup_dist, rideStartTime],
              (err, resp) => {
                 console.log('err:', err)
                 console.log('resp:', resp)
