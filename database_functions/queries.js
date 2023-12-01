@@ -159,12 +159,12 @@ async function createDriverInfo(connection, driver_id, carMake, carModel, licens
 //connection: MYSQL instance
 //userId: int
 //rideId: int
-async function sendRiderRequest(connection, userId, rideId) {
+async function sendRiderRequest(connection, userId, rideId, rideStartPoint, riderStartPoint) {
     return new Promise((resolve) => {
         connection.query(
-            `INSERT INTO ride_requests (rider_id, ride_id) 
-            VALUES(?, ?)`,
-            [userId, rideId],
+            `INSERT INTO ride_requests (rider_id, ride_id, distance) 
+            VALUES(?, ?, ?)`,
+            [userId, rideId, 1],
             (err, resp) => {
                 console.log('err:', err);
                 console.log('resp:', resp);
@@ -175,6 +175,18 @@ async function sendRiderRequest(connection, userId, rideId) {
                 } else {
                 resolve("Made request");
                 }
+            }
+        );
+    });
+}
+
+async function getRideStartPoint(connection, rideId) {
+    return new Promise((resolve) => {
+        connection.query(
+            `SELECT start_point FROM pending_active_rides WHERE ride_id=?`,
+            [rideId],
+            (err, resp) => {
+               resolve(resp)
             }
         );
     });
@@ -219,7 +231,32 @@ const getCreatedRidesByDriver = (connection, driverId) => {
             'SELECT ride_id, start_point, driver_dest, accepted_riders, maximum_riders, ride_start_time, pickup_dist FROM pending_active_rides WHERE driver_id=?',
             [driverId], 
             (err, resp) => {
-                console.log(err, resp)
+                resolve(resp)
+            }
+        )
+    })
+}
+
+const getRequestingRidersByRid = (connection, rideId) => {
+    return new Promise((resolve) => {
+        connection.query(
+            `SELECT 
+            rr.rider_id,
+            rr.distance,
+            a.first_name,
+            a.last_name,
+            COALESCE(ar.average_rating, 'No rating') AS average_rating
+        FROM 
+            ride_requests rr
+        LEFT JOIN 
+            avg_rating ar ON rr.rider_id = ar.ratee_id
+        LEFT JOIN
+            account a ON rr.rider_id = a.user_id
+        WHERE 
+            rr.ride_id = ?`,
+            [rideId], 
+            (err, resp) => {
+                console.log(err)
                 resolve(resp)
             }
         )
@@ -236,5 +273,7 @@ module.exports = {
     resolveRiderRequest,
     sendRiderRequest,
     getNumRiders,
-    getCreatedRidesByDriver
+    getCreatedRidesByDriver,
+    getRequestingRidersByRid,
+    getRideStartPoint
 }

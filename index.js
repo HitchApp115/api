@@ -14,7 +14,9 @@ const {
     resolveRiderRequest,
     sendRiderRequest,
     getNumRiders,
-    getCreatedRidesByDriver
+    getCreatedRidesByDriver,
+    getRequestingRidersByRid,
+    getRideStartPoint
  } = require('./database_functions/queries')
 const {
     randomId, 
@@ -22,7 +24,8 @@ const {
     passwordSalt, 
     verifyLoginHash,
     getRoutesJSON
-} = require('./helpers')
+} = require('./helpers');
+const { start } = require('repl');
 const loginHashMap = JSON.parse(fs.readFileSync('logins.json')) // new Map()
 
 const app = express();
@@ -148,7 +151,6 @@ app.get('/rides/view', async(req, res) => {
 //// NEW
 app.get('/rides/pending', async (req, res) => {
     const { authorization } = req.headers
-    console.log(authorization, loginHashMap[authorization])
     if (!verifyLoginHash(loginHashMap, authorization, new Date())){
         res
             .status(401)
@@ -159,15 +161,14 @@ app.get('/rides/pending', async (req, res) => {
     //const { userId } = loginHashMap.get(authorization)
     const {userId} = loginHashMap[authorization]
 
-    console.log(userId)
     //Get rides created by the userId
 
     let rides = await getCreatedRidesByDriver(connection, userId)
-    console.log(userId, rides)
+    let rrr = await getRequestingRidersByRid(connection, 904181)
 
     res.send({
         status: 'success',
-        pendingRides: rides
+        pendingRides: rrr
     })
 
 
@@ -259,9 +260,10 @@ app.post('/rides/sendRiderRequest', async (req, res) => {
     }
 
     const {userId} = loginHashMap[authorization]
-    const {rideId} = req.body
+    const {rideId, riderStartPoint} = req.body
+    const rideStartPoint = (await getRideStartPoint(connection, rideId))[0]['start_point']
     try {
-        const resp = await sendRiderRequest(connection, userId, rideId);
+        const resp = await sendRiderRequest(connection, userId, rideId, rideStartPoint, riderStartPoint);
         res.send({
             status: 'success',
             message: resp // Will send 'Made request' or 'Preexisting user request' if duplication present
