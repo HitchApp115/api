@@ -213,6 +213,18 @@ async function resolveRiderRequest(connection, rideId, riderId, acceptRider) {
     });
 }
 
+const getCreatedRidesByDriver = (connection, driverId) => {
+    return new Promise((resolve) => {
+        connection.query(
+            'SELECT ride_id, start_point, driver_dest, accepted_riders, max_riders, ride_start_time, pickup_dist FROM pending_active_rides WHERE driver_id=?',
+            [driverId], 
+            (err, resp) => {
+                resolve(resp)
+            }
+        )
+    })
+}
+
 module.exports = {
     createAccount,
     login,
