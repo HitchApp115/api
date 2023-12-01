@@ -161,15 +161,21 @@ app.get('/rides/pending', async (req, res) => {
 
     //const { userId } = loginHashMap.get(authorization)
     const {userId} = loginHashMap[authorization]
+    console.log("USERID:", userId)
 
     //Get rides created by the userId
 
     let rides = await getCreatedRidesByDriver(connection, userId)
-    let rrr = await getRequestingRidersByRid(connection, 904181)
+    console.log(rides)
+    for (let ride of rides){
+        ride['requesting_riders'] = await getRequestingRidersByRid(connection, ride['ride_id'])
+    }
+
+    console.log(rides)
 
     res.send({
         status: 'success',
-        pendingRides: rrr
+        pendingRides: rides
     })
 
 
