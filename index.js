@@ -122,7 +122,7 @@ app.post('/rides/create', async (req, res) => {
     //const { userId } = loginHashMap.get(authorization)
     const {userId} = loginHashMap[authorization]
     const rideId = randomId()
-    const { startPoint, destination, riders, costPerRider, pickUpDistance, rideStartTime } = req.body
+    const { startPointName, endPointName, startPoint, destination, riders, costPerRider, pickUpDistance, rideStartTime } = req.body
 
     const [startPointLat, startPointLong] = [startPoint.latitude, startPoint.longitude]
     const [endPointLat, endPointLong] = [destination.latitude, destination.longitude]
