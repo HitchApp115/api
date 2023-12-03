@@ -158,8 +158,8 @@ async function sendRiderRequest(connection, userId, rideId, rideStartPoint, ride
         console.log("Look:", rideStartPoint, riderStartPoint)
         connection.query(
             `INSERT INTO ride_requests (rider_id, ride_id, distance) 
-            VALUES(?, ?, ?)`,
-            [userId, rideId, 1],
+            VALUES(?, ?, GET_DIST(?, ?))`,
+            [userId, rideId, rideStartPoint, riderStartPoint],
             (err, resp) => {
                 console.log('err:', err);
                 console.log('resp:', resp);
