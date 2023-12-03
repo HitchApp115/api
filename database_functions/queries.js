@@ -81,16 +81,11 @@ const getNumRiders = async(connection, ride_id) => {
 //user_point: string in format Name:Lat,Lon
 //maxPrice: double
 const getNearbyRides = async(connection, user_point, maxPrice) => {
-    //split the user_point to get the name, lattitude and longigtude
-    let latLon = user_point.split(":")[1] //this is probably slow
-    let ar = latLon.split(",")
-    let userLat = ar[0]
-    let userLon = ar[1]
     return new Promise((resolve) => {
         //filter database for pickup_dist AND cost_per_rider, TBD to refactor
         connection.query(
-            `SELECT * FROM pending_active_rides WHERE pickup_dist > GET_DIST(?, ?, start_point) AND cost_per_rider <= ?`,
-            [userLat, userLon, maxPrice],
+            `SELECT * FROM pending_active_rides WHERE pickup_dist > GET_DIST(?, start_point) AND cost_per_rider <= ?`,
+            [user_point, maxPrice],
             (err, resp) => {
                 console.log('err:', err)
                 console.log('resp:', resp)
@@ -160,6 +155,7 @@ async function createDriverInfo(connection, driver_id, carMake, carModel, licens
 //rideId: int
 async function sendRiderRequest(connection, userId, rideId, rideStartPoint, riderStartPoint) {
     return new Promise((resolve) => {
+        console.log("Look:", rideStartPoint, riderStartPoint)
         connection.query(
             `INSERT INTO ride_requests (rider_id, ride_id, distance) 
             VALUES(?, ?, ?)`,
