@@ -127,7 +127,7 @@ app.post('/rides/create', async (req, res) => {
     const [startPointLat, startPointLong] = [startPoint.latitude, startPoint.longitude]
     const [endPointLat, endPointLong] = [destination.latitude, destination.longitude]
     
-    let response = await createNewRide(connection, rideId, userId, `StartPoint:${startPointLat},${startPointLong}`, `EndPoint:${endPointLat},${endPointLong}`, riders, costPerRider, pickUpDistance, rideStartTime)
+    let response = await createNewRide(connection, rideId, userId, `${startPointName}:${startPointLat},${startPointLong}`, `${endPointName}:${endPointLat},${endPointLong}`, riders, costPerRider, pickUpDistance, rideStartTime)
     res.send({
         status: 'success',
         rideId, userId, start: `StartPoint:${startPointLat},${startPointLong}`, end: `EndPoint:${endPointLat},${endPointLong}`, riders, costPerRider, pickUpDistance,
@@ -310,6 +310,19 @@ app.post('/driver/info', upload.fields([{ name: 'driverPhoto', maxCount: 1 }, { 
           message: 'Internal server error'
       });
   }
+})
+
+
+app.get('/account/info', (req, res) => {
+    const { authorization } = req.headers;
+
+    if (!verifyLoginHash(loginHashMap, authorization, new Date())) {
+        res.status(401).send("User not logged in");
+        return;
+    }
+  
+    const { userId } = loginHashMap[authorization];
+  
 })
 
 app.listen(port, () => {
