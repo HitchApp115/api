@@ -237,7 +237,7 @@ app.post('/rides/resolveRiderRequest', async (req, res) =>  {
             .send("User not logged in")
         return
     }
-
+    // const { userId } = loginHashMap[authorization];
     const { rideId, riderId, acceptRider } = req.body
     try {
         let resp = await resolveRiderRequest(connection, rideId, riderId, acceptRider)
