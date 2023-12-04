@@ -189,7 +189,7 @@ app.get("/rides/view", async (req, res) => {
   });
 });
 
-//// NEW
+
 app.get("/rides/pending", async (req, res) => {
   const { authorization } = req.headers;
   if (!verifyLoginHash(loginHashMap, authorization, new Date())) {
@@ -219,7 +219,8 @@ app.get("/rides/pending", async (req, res) => {
     pendingRides: rides,
   });
 });
-////// NEW
+
+
 app.get("/directions", async (req, res) => {
   try {
     const { origin, destination } = req.query;

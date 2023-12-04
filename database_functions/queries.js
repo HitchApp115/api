@@ -222,7 +222,7 @@ async function resolveRiderRequest(connection, rideId, riderId, acceptRider) {
 const getCreatedRidesByDriver = (connection, driverId) => {
     return new Promise((resolve) => {
         connection.query(
-            'SELECT ride_id, start_point, driver_dest, accepted_riders, maximum_riders, ride_start_time, pickup_dist FROM pending_active_rides WHERE driver_id=?',
+            'SELECT ride_id, start_point, driver_dest, accepted_riders, maximum_riders, ride_start_time, pickup_dist FROM pending_active_rides WHERE driver_id=? AND is_active=0',
             [driverId], 
             (err, resp) => {
                 resolve(resp)
