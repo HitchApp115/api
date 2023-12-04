@@ -420,12 +420,9 @@ app.post("/rides/approved", async (req, res) => {
   }
 //   console.log("AUTHORIZATION:", authorization);
   const { userId } = loginHashMap[authorization];
-  const { ride_id } = req.body;
   const rider_id = userId;
-  console.log("RIDER ID:", rider_id);
-  console.log("RIDE ID:", ride_id);
   try {
-    const resp = await getPendingRideStatus(connection, rider_id, ride_id);
+    const resp = await getPendingRideStatus(connection, rider_id);
     res.send({
       status: "success",
       message: resp,

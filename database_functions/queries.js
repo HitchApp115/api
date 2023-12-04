@@ -273,11 +273,11 @@ const getAccountInfo = (connection, userId) => {
     });
 };
 
-const getPendingRideStatus = (connection, rider_id, ride_id) => {
+const getPendingRideStatus = (connection, rider_id) => {
     return new Promise((resolve) => {
         connection.query(
-            'SELECT * FROM ride_requests WHERE rider_id = ? AND ride_id = ?', 
-            [rider_id, ride_id], // Assuming rideId and riderId are the variables holding the IDs you want to query
+            'SELECT * FROM ride_requests WHERE rider_id = ?', 
+            [rider_id], // Assuming rideId and riderId are the variables holding the IDs you want to query
             (err, resp) => {
                 // console.log(err);
                 // console.log("response ",resp[0]['accepted']);
