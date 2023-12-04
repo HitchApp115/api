@@ -201,7 +201,6 @@ app.get("/rides/pending", async (req, res) => {
 
   //const { userId } = loginHashMap.get(authorization)
   const { userId } = loginHashMap[authorization];
-  console.log("USERID:", userId);
 
   //Get rides created by the userId
 
@@ -404,16 +403,21 @@ app.get('/account/info', async (req, res) => {
       res.status(401).send("User not logged in");
       return;
     }
-  //   console.log("AUTHORIZATION:", authorization);
     const { userId } = loginHashMap[authorization];
-    const { rideId } = req.body
-
-    await deletePendingRide(connection, rideId, userId)
-    await deletePendingRiders(connection, rideId)
+  try {
+    const accountInfo = await getAccountInfo(connection, userId);
     res.send({
-        status: 'success'
-    })
-})
+      status: "success",
+      accountInfo,
+    });
+  } catch (error) {
+    console.error("Erro fetching account information", error);
+    res.status(500).send({
+      status: "error",
+      message: "Internal server error",
+    });
+  }
+});
 
 app.post('/rides/start', async (req,res) => {
   const { authorization } = req.headers;
@@ -422,7 +426,6 @@ app.post('/rides/start', async (req,res) => {
     return;
   }
 //   console.log("AUTHORIZATION:", authorization);
-  const { userId } = loginHashMap[authorization];
   const { rideId } = req.body
 
   await markRideAsActive(connection, rideId)
@@ -440,6 +443,7 @@ app.get('/rides/active', async (req, res) => {
     return;
   }
 //   console.log("AUTHORIZATION:", authorization);
+    const { userId } = loginHashMap[authorization];
 
   let rideId = (await grabActiveRide(connection, userId))[0]['ride_id']
 
@@ -463,21 +467,7 @@ app.get('/rides/active', async (req, res) => {
     return;
   }
 
-  const { userId } = loginHashMap[authorization];
-  try {
-    const accountInfo = await getAccountInfo(connection, userId);
-    res.send({
-      status: "success",
-      accountInfo,
-    });
-  } catch (error) {
-    console.error("Erro fetching account information", error);
-    res.status(500).send({
-      status: "error",
-      message: "Internal server error",
-    });
-  }
-});
+  
 
 app.post("/rides/approved", async (req, res) => {
   const { authorization } = req.headers;
