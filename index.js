@@ -428,6 +428,16 @@ app.post('/rides/start', async (req,res) => {
 //   console.log("AUTHORIZATION:", authorization);
   const { rideId } = req.body
 
+  let active_ride = (await grabActiveRide(connection, userId))[0].map(v => v['ride_id'])
+
+  if (active_ride.length){
+    res.status(500).send({
+      status: "failure",
+      message: "Active Ride aslready exists"
+    })
+    return
+  }
+
   await markRideAsActive(connection, rideId)
 
   res.send({
