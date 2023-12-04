@@ -257,6 +257,22 @@ const getRequestingRidersByRid = (connection, rideId) => {
     })
 }
 
+const getAccountInfo = (connection, userId) => {
+    return new Promise((resolve) => { // Corrected the parenthesis placement
+        connection.query(
+            `SELECT username, email, phone_num
+            FROM account
+            WHERE user_id = ?`,
+            [userId],
+            (err, resp) => {
+                console.log(err);
+                console.log(resp);
+                resolve(resp);
+            }
+        );
+    });
+};
+
 module.exports = {
     createAccount,
     login,
@@ -269,5 +285,6 @@ module.exports = {
     getNumRiders,
     getCreatedRidesByDriver,
     getRequestingRidersByRid,
-    getRideStartPoint
+    getRideStartPoint,
+    getAccountInfo
 }

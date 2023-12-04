@@ -16,7 +16,8 @@ const {
     getNumRiders,
     getCreatedRidesByDriver,
     getRequestingRidersByRid,
-    getRideStartPoint
+    getRideStartPoint,
+    getAccountInfo
  } = require('./database_functions/queries')
 const {
     randomId, 
@@ -313,7 +314,7 @@ app.post('/driver/info', upload.fields([{ name: 'driverPhoto', maxCount: 1 }, { 
 })
 
 
-app.get('/account/info', (req, res) => {
+app.get('/account/info', async (req, res) => {
     const { authorization } = req.headers;
 
     if (!verifyLoginHash(loginHashMap, authorization, new Date())) {
@@ -322,7 +323,19 @@ app.get('/account/info', (req, res) => {
     }
   
     const { userId } = loginHashMap[authorization];
-  
+    try {
+        const accountInfo = await getAccountInfo(connection, userId);
+        res.send({
+            status: 'success',
+            accountInfo
+        });
+    } catch (error) {
+        console.error('Erro fetching account information', error);
+        res.status(500).send({
+            status: 'error',
+            message: 'Internal server error'
+        });
+    }
 })
 
 app.listen(port, () => {
