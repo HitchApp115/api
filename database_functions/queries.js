@@ -156,9 +156,9 @@ async function createDriverInfo(connection, driver_id, carMake, carModel, licens
 async function sendRiderRequest(connection, userId, rideId, rideStartPoint, riderStartPoint) {
     return new Promise((resolve) => {
             connection.query(
-            `INSERT INTO ride_requests (rider_id, ride_id, distance) 
-            VALUES(?, ?, GET_DIST(?, ?))`,
-            [userId, rideId, rideStartPoint, riderStartPoint],
+            `INSERT INTO ride_requests (rider_id, ride_id, distance, pickup_spot) 
+            VALUES(?, ?, GET_DIST(?, ?), ?)`,
+            [userId, rideId, rideStartPoint, riderStartPoint, riderStartPoint],
             (err, resp) => {
                 console.log('err:', err);
                 console.log('resp:', resp);
