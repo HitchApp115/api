@@ -487,12 +487,12 @@ app.get('/rides/active', async (req, res) => {
 //   console.log("AUTHORIZATION:", authorization);
   const { userId } = loginHashMap[authorization];
 
-  let rideId = (await grabActiveRide(connection, userId))
+  let rideId = (await grabActiveRide(connection, userId))[0]['ride_id']
 
 
   //  Get the riders and their start points     getRequestingRidersByRid
-  // let ridersData = await getAcceptedRidersByRide(connection, rideId)
-  // let rideData = await getPendingRideByRide(connection, rideId)
+  let ridersData = await getAcceptedRidersByRide(connection, rideId)
+  let rideData = await getPendingRideByRide(connection, rideId)
 
   // //  Remove Pending/accepted rides from ride_requests and move to completed_rides_by_rider
 
@@ -500,7 +500,8 @@ app.get('/rides/active', async (req, res) => {
     // Send the rider startPoints, and the destination for the ride
   res.send({
       status: 'success',
-      rideId
+      riders: ridersData,
+      ride: rideData
   })
 
 })

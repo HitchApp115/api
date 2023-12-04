@@ -364,7 +364,7 @@ const markRideAsActive = (connection, rideId) => {
 const grabActiveRide = (connection, driverId) => {
     return new Promise((resolve, reject) => {
         connection.query(
-            'SELECT ride_id from pending_active_rides WHERE driver_id=?', 
+            'SELECT ride_id from pending_active_rides WHERE driver_id=? AND is_active=1', 
             [driverId], // Assuming rideId and riderId are the variables holding the IDs you want to query
             (err, resp) => {
                 if (err){
