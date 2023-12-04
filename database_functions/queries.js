@@ -156,9 +156,9 @@ async function createDriverInfo(connection, driver_id, carMake, carModel, licens
 async function sendRiderRequest(connection, userId, rideId, rideStartPoint, riderStartPoint) {
     return new Promise((resolve) => {
             connection.query(
-            `INSERT INTO ride_requests (rider_id, ride_id, distance) 
-            VALUES(?, ?, GET_DIST(?, ?))`,
-            [userId, rideId, rideStartPoint, riderStartPoint],
+            `INSERT INTO ride_requests (rider_id, ride_id, distance, pickup_spot) 
+            VALUES(?, ?, GET_DIST(?, ?), ?)`,
+            [userId, rideId, rideStartPoint, riderStartPoint, riderStartPoint],
             (err, resp) => {
                 console.log('err:', err);
                 console.log('resp:', resp);
@@ -222,7 +222,7 @@ async function resolveRiderRequest(connection, rideId, riderId, acceptRider) {
 const getCreatedRidesByDriver = (connection, driverId) => {
     return new Promise((resolve) => {
         connection.query(
-            'SELECT ride_id, start_point, driver_dest, accepted_riders, maximum_riders, ride_start_time, pickup_dist FROM pending_active_rides WHERE driver_id=?',
+            'SELECT ride_id, start_point, driver_dest, accepted_riders, maximum_riders, ride_start_time, pickup_dist FROM pending_active_rides WHERE driver_id=? AND is_active=0',
             [driverId], 
             (err, resp) => {
                 resolve(resp)
@@ -237,6 +237,7 @@ const getRequestingRidersByRid = (connection, rideId) => {
             `SELECT 
             rr.rider_id,
             rr.distance,
+            rr.pickup_spot,
             a.first_name,
             a.last_name,
             COALESCE(ar.average_rating, 'No rating') AS average_rating
@@ -247,7 +248,20 @@ const getRequestingRidersByRid = (connection, rideId) => {
         LEFT JOIN
             account a ON rr.rider_id = a.user_id
         WHERE 
-            rr.ride_id = ?`,
+            rr.ride_id = ? AND rr.accepted=0`,
+            [rideId], 
+            (err, resp) => {
+                console.log(err)
+                resolve(resp)
+            }
+        )
+    })
+}
+
+const getAcceptedRidersByRide = (connection, rideId) => {
+    return new Promise((resolve) => {
+        connection.query(
+            `SELECT * FROM ride_requests WHERE ride_id = ? AND accepted=1`,
             [rideId], 
             (err, resp) => {
                 console.log(err)
@@ -272,6 +286,97 @@ const getAccountInfo = (connection, userId) => {
         );
     });
 };
+
+const getPendingRideStatus = (connection, rider_id) => {
+    return new Promise((resolve) => {
+        connection.query(
+            'SELECT * FROM ride_requests WHERE rider_id = ?', 
+            [rider_id], // Assuming rideId and riderId are the variables holding the IDs you want to query
+            (err, resp) => {
+                // console.log(err);
+                // console.log("response ",resp[0]['accepted']);
+                resolve(resp);
+            }
+          );
+    });
+};
+    
+
+const deletePendingRide = (connection, rideId, driverId) => {
+    return new Promise((resolve, reject) => {
+        connection.query(
+            'DELETE from pending_active_rides WHERE ride_id=? AND driver_id=?', 
+            [rideId, driverId], // Assuming rideId and riderId are the variables holding the IDs you want to query
+            (err, resp) => {
+                if (err){
+                    reject("LLL")
+                }
+                resolve(resp);
+            }
+          );
+    });
+};
+const deletePendingRiders = (connection, rideId) => {
+    return new Promise((resolve, reject) => {
+        connection.query(
+            'DELETE from ride_requests WHERE ride_id=?', 
+            [rideId], // Assuming rideId and riderId are the variables holding the IDs you want to query
+            (err, resp) => {
+                if (err){
+                    reject("LLL")
+                }
+                resolve(resp);
+            }
+          );
+    });
+};
+
+const getPendingRideByRide = (connection, rideId) => {
+    return new Promise((resolve, reject) => {
+        connection.query(
+            'SELECT * from pending_active_rides WHERE ride_id=?', 
+            [rideId], // Assuming rideId and riderId are the variables holding the IDs you want to query
+            (err, resp) => {
+                if (err){
+                    reject("LLL")
+                }
+                resolve(resp);
+            }
+          );
+    });
+}
+
+const markRideAsActive = (connection, rideId) => {
+    return new Promise((resolve, reject) => {
+        connection.query(
+            'UPDATE pending_active_rides SET is_active=1 WHERE ride_id=?', 
+            [rideId], // Assuming rideId and riderId are the variables holding the IDs you want to query
+            (err, resp) => {
+                if (err){
+                    reject("LLL")
+                }
+                resolve(resp);
+            }
+          );
+    });
+}
+
+const grabActiveRide = (connection, driverId) => {
+    return new Promise((resolve, reject) => {
+        connection.query(
+            'SELECT ride_id from pending_active_rides WHERE driver_id=? AND is_active=1', 
+            [driverId], // Assuming rideId and riderId are the variables holding the IDs you want to query
+            (err, resp) => {
+                if (err){
+                    reject("LLL")
+                }
+                resolve(resp);
+            }
+          );
+    });
+}
+
+
 
 const removeAcceptedRider = (connection, userId, rideId) => {
     return new Promise((resolve) => {
@@ -316,5 +421,12 @@ module.exports = {
     getCreatedRidesByDriver,
     getRequestingRidersByRid,
     getRideStartPoint,
-    getAccountInfo
+    getAccountInfo,
+    getPendingRideStatus,
+    deletePendingRide,
+    deletePendingRiders,
+    getAcceptedRidersByRide,
+    getPendingRideByRide,
+    markRideAsActive,
+    grabActiveRide
 }
