@@ -237,6 +237,7 @@ const getRequestingRidersByRid = (connection, rideId) => {
             `SELECT 
             rr.rider_id,
             rr.distance,
+            rr.pickup_spot,
             a.first_name,
             a.last_name,
             COALESCE(ar.average_rating, 'No rating') AS average_rating
@@ -248,6 +249,19 @@ const getRequestingRidersByRid = (connection, rideId) => {
             account a ON rr.rider_id = a.user_id
         WHERE 
             rr.ride_id = ? AND rr.accepted=0`,
+            [rideId], 
+            (err, resp) => {
+                console.log(err)
+                resolve(resp)
+            }
+        )
+    })
+}
+
+const getAcceptedRidersByRide = (connection, rideId) => {
+    return new Promise((resolve) => {
+        connection.query(
+            `SELECT * FROM ride_requests WHERE ride_id = ? AND accepted=1`,
             [rideId], 
             (err, resp) => {
                 console.log(err)
@@ -317,6 +331,36 @@ const deletePendingRiders = (connection, rideId) => {
     });
 };
 
+const getPendingRideByRide = (connection, rideId) => {
+    return new Promise((resolve, reject) => {
+        connection.query(
+            'SELECT * from pending_active_rides WHERE ride_id=?', 
+            [rideId], // Assuming rideId and riderId are the variables holding the IDs you want to query
+            (err, resp) => {
+                if (err){
+                    reject("LLL")
+                }
+                resolve(resp);
+            }
+          );
+    });
+}
+
+const markRideAsActive = (connection, rideId) => {
+    return new Promise((resolve, reject) => {
+        connection.query(
+            'UPDATE pending_active_rides SET is_active=1 WHERE ride_id=?', 
+            [rideId], // Assuming rideId and riderId are the variables holding the IDs you want to query
+            (err, resp) => {
+                if (err){
+                    reject("LLL")
+                }
+                resolve(resp);
+            }
+          );
+    });
+}
+
 
 
 module.exports = {
@@ -335,5 +379,8 @@ module.exports = {
     getAccountInfo,
     getPendingRideStatus,
     deletePendingRide,
-    deletePendingRiders
+    deletePendingRiders,
+    getAcceptedRidersByRide,
+    getPendingRideByRide,
+    markRideAsActive
 }

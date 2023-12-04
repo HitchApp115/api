@@ -20,7 +20,10 @@ const {
   getAccountInfo,
   getPendingRideStatus,
   deletePendingRide,
-  deletePendingRiders
+  deletePendingRiders,
+  getAcceptedRidersByRide,
+  getPendingRideByRide,
+  markRideAsActive
 } = require("./database_functions/queries");
 const {
   randomId,
@@ -453,6 +456,47 @@ app.delete('/rides/remove', async (req,res) => {
     res.send({
         status: 'success'
     })
+})
+
+app.post('/rides/start', async (req,res) => {
+  const { authorization } = req.headers;
+  if (!verifyLoginHash(loginHashMap, authorization, new Date())) {
+    res.status(401).send("User not logged in");
+    return;
+  }
+//   console.log("AUTHORIZATION:", authorization);
+  const { userId } = loginHashMap[authorization];
+  const { rideId } = req.body
+
+  await markRideAsActive(rideId)
+
+  res.send({
+    status: 'success'
+  })
+
+})
+
+app.get('/rides/active', async (req, res) => {
+  const { authorization } = req.headers;
+  if (!verifyLoginHash(loginHashMap, authorization, new Date())) {
+    res.status(401).send("User not logged in");
+    return;
+  }
+//   console.log("AUTHORIZATION:", authorization);
+  const { userId } = loginHashMap[authorization];
+
+  //  Get the riders and their start points     getRequestingRidersByRid
+  let ridersData = await getAcceptedRidersByRide(connection, rideId)
+  let rideData = await getPendingRideByRide(connection, rideId)
+
+  //  Remove Pending/accepted rides from ride_requests and move to completed_rides_by_rider
+
+  console.log("RIDER:", ridersData, rideData)
+    // Send the rider startPoints, and the destination for the ride
+  res.send({
+      status: 'success'
+  })
+
 })
 
 app.listen(port, () => {
