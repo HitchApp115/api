@@ -258,13 +258,41 @@ const getRequestingRidersByRid = (connection, rideId) => {
 }
 
 const getAccountInfo = (connection, userId) => {
-    return new Promise((resolve) => { // Corrected the parenthesis placement
+    return new Promise((resolve) => {
         connection.query(
             `SELECT username, email, phone_num
             FROM account
             WHERE user_id = ?`,
             [userId],
             (err, resp) => {
+                console.log(err);
+                console.log(resp);
+                resolve(resp);
+            }
+        );
+    });
+};
+
+const removeAcceptedRider = (connection, userId, rideId) => {
+    return new Promise((resolve) => {
+        connection.query(
+            `CALL RemoveRiderFromAcceptedRequest(?,?)`,
+            [userId, rideId],
+            (err, resp) => {
+                console.log(err);
+                console.log(resp);
+                resolve(resp);
+            }
+        );
+    });
+};
+
+const removePendingRider = (connecion, userId, rideId) => {
+    return new Promise((resolve) => {
+        connecion.query(
+            `CALL RemoveRiderFromPendingRequest(?,?)`,
+            [userId, rideId],
+            (err,resp) => {
                 console.log(err);
                 console.log(resp);
                 resolve(resp);
@@ -282,6 +310,8 @@ module.exports = {
     createDriverInfo,
     resolveRiderRequest,
     sendRiderRequest,
+    removeAcceptedRider,
+    removePendingRider,
     getNumRiders,
     getCreatedRidesByDriver,
     getRequestingRidersByRid,

@@ -13,6 +13,8 @@ const {
     createDriverInfo,
     resolveRiderRequest,
     sendRiderRequest,
+    removeAcceptedRider,
+    removePendingRider,
     getNumRiders,
     getCreatedRidesByDriver,
     getRequestingRidersByRid,
@@ -244,7 +246,7 @@ app.post('/rides/resolveRiderRequest', async (req, res) =>  {
         let resp = await resolveRiderRequest(connection, rideId, riderId, acceptRider)
         res.send({
             status: 'success',
-            message: resp //'Successfully added rider' or 'Ride is full'
+            message: resp //'Successfully added rider' or 'Ride is full' or 'Rider is already accepted' or 'Ride does not exist'
         });
     } catch (error) {
         console.error('Error resolving rider request information:', error)
@@ -336,6 +338,54 @@ app.get('/account/info', async (req, res) => {
             message: 'Internal server error'
         });
     }
+})
+
+app.post('/rides/removeAcceptedRider', async (req, res) => {
+    const { authorization } = req.headers;
+
+    if (!verifyLoginHash(loginHashMap, authorization, new Date())) {
+        res.status(401).send("User not logged in");
+        return;
+    }
+  
+    const { userId } = loginHashMap[authorization];
+    const { rideId } = req.body
+    try {
+        const resp = await removeAcceptedRider(connection, userId, rideId);
+        res.send({
+            status: 'success',
+        });
+    } catch (error) {
+        console.error('Erro removing request information', error);
+        res.status(500).send({
+            status: 'error',
+            message: 'Internal server error'
+        });
+    }    
+})
+
+app.post('/rides/removePendingRider', async (req, res) => {
+    const { authorization } = req.headers;
+
+    if (!verifyLoginHash(loginHashMap, authorization, new Date())) {
+        res.status(401).send("User not logged in");
+        return;
+    }
+  
+    const { userId } = loginHashMap[authorization];
+    const { rideId } = req.body
+    try {
+        const resp = await removePendingRider(connection, userId, rideId);
+        res.send({
+            status: 'success',
+        });
+    } catch (error) {
+        console.error('Erro removing request information', error);
+        res.status(500).send({
+            status: 'error',
+            message: 'Internal server error'
+        });
+    }    
 })
 
 app.listen(port, () => {
