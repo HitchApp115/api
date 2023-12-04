@@ -466,6 +466,8 @@ app.get('/rides/active', async (req, res) => {
     res.status(401).send("User not logged in");
     return;
   }
+});
+
 
   
 
