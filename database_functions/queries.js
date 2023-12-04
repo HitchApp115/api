@@ -104,17 +104,34 @@ const getNearbyRides = async(connection, user_point, maxPrice) => {
 //pickup_dist: double
 const createNewRide = async (connection, ride_id, driver_id, start_point, driver_dest, riders, cost_per_rider, pickup_dist, rideStartTime) => {
     return new Promise((resolve) => {
-        // Ignoring requesting_rider because it should be handled by requested_rides table
+        connection.query(
+            `SELECT * FROM pending_active_rides WHERE driver_id = ?`,
+            [driver_id],
+            (err, resp) => {
+                if (err) {
+                    console.error('Error checking for existing rides:', selectErr);
+                    reject(selectErr);
+                    return;
+                }
+                // If there is an existing ride, resolve the promise
+                if (resp.length > 0) {
+                    const existingRide = resp[0];
+                    console.log(`There is already a ride with driver_id ${driver_id} in pending_active_rides. Existing ride_id: ${existingRide.ride_id}`);
+                    resolve('Ride with the same driver_id already exists.');
+                    return;
+                }
+            })
         connection.query(
            `INSERT INTO pending_active_rides 
                 (ride_id, driver_id, start_point, driver_dest, maximum_riders, cost_per_rider, pickup_dist, ride_start_time) 
-                VALUES 
+                VALUES
                 (?, ?, ?, ?, ?, ?, ?, ?)`,
              [ride_id, driver_id, start_point, driver_dest, riders, cost_per_rider, pickup_dist, rideStartTime],
              (err, resp) => {
                 console.log('err:', err)
                 console.log('resp:', resp)
                 resolve(resp)
+                return;
             }
         )
     })
