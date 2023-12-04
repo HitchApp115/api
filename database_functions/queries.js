@@ -247,7 +247,7 @@ const getRequestingRidersByRid = (connection, rideId) => {
         LEFT JOIN
             account a ON rr.rider_id = a.user_id
         WHERE 
-            rr.ride_id = ?`,
+            rr.ride_id = ? AND rr.accepted=0`,
             [rideId], 
             (err, resp) => {
                 console.log(err)
