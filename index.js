@@ -565,8 +565,8 @@ app.get('/rides/active', async (req, res) => {
       riders: ridersData,
       ride: rideData
   })
-
 })
+
 
 app.listen(port, () => {
   console.log(`Server running at http://localhost:${port}`);
