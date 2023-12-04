@@ -361,6 +361,21 @@ const markRideAsActive = (connection, rideId) => {
     });
 }
 
+const grabActiveRide = (connection, driverId) => {
+    return new Promise((resolve, reject) => {
+        connection.query(
+            'SELECT ride_id from pending_active_rides WHERE driver_id=?', 
+            [driverId], // Assuming rideId and riderId are the variables holding the IDs you want to query
+            (err, resp) => {
+                if (err){
+                    reject("LLL")
+                }
+                resolve(resp);
+            }
+          );
+    });
+}
+
 
 
 module.exports = {
@@ -382,5 +397,6 @@ module.exports = {
     deletePendingRiders,
     getAcceptedRidersByRide,
     getPendingRideByRide,
-    markRideAsActive
+    markRideAsActive,
+    grabActiveRide
 }

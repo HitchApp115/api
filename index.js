@@ -23,7 +23,8 @@ const {
   deletePendingRiders,
   getAcceptedRidersByRide,
   getPendingRideByRide,
-  markRideAsActive
+  markRideAsActive,
+  grabActiveRide
 } = require("./database_functions/queries");
 const {
   randomId,
@@ -468,7 +469,7 @@ app.post('/rides/start', async (req,res) => {
   const { userId } = loginHashMap[authorization];
   const { rideId } = req.body
 
-  await markRideAsActive(rideId)
+  await markRideAsActive(connection, rideId)
 
   res.send({
     status: 'success'
@@ -485,16 +486,20 @@ app.get('/rides/active', async (req, res) => {
 //   console.log("AUTHORIZATION:", authorization);
   const { userId } = loginHashMap[authorization];
 
+  let rideId = (await grabActiveRide(connection, userId))
+
+
   //  Get the riders and their start points     getRequestingRidersByRid
-  let ridersData = await getAcceptedRidersByRide(connection, rideId)
-  let rideData = await getPendingRideByRide(connection, rideId)
+  // let ridersData = await getAcceptedRidersByRide(connection, rideId)
+  // let rideData = await getPendingRideByRide(connection, rideId)
 
-  //  Remove Pending/accepted rides from ride_requests and move to completed_rides_by_rider
+  // //  Remove Pending/accepted rides from ride_requests and move to completed_rides_by_rider
 
-  console.log("RIDER:", ridersData, rideData)
+  // console.log("RIDER:", ridersData, rideData)
     // Send the rider startPoints, and the destination for the ride
   res.send({
-      status: 'success'
+      status: 'success',
+      rideId
   })
 
 })
