@@ -288,6 +288,35 @@ const getPendingRideStatus = (connection, rider_id) => {
 };
     
 
+const deletePendingRide = (connection, rideId, driverId) => {
+    return new Promise((resolve, reject) => {
+        connection.query(
+            'DELETE from pending_active_rides WHERE ride_id=? AND driver_id=?', 
+            [rideId, driverId], // Assuming rideId and riderId are the variables holding the IDs you want to query
+            (err, resp) => {
+                if (err){
+                    reject("LLL")
+                }
+                resolve(resp);
+            }
+          );
+    });
+};
+const deletePendingRiders = (connection, rideId) => {
+    return new Promise((resolve, reject) => {
+        connection.query(
+            'DELETE from ride_requests WHERE ride_id=?', 
+            [rideId], // Assuming rideId and riderId are the variables holding the IDs you want to query
+            (err, resp) => {
+                if (err){
+                    reject("LLL")
+                }
+                resolve(resp);
+            }
+          );
+    });
+};
+
 
 
 module.exports = {
@@ -304,5 +333,7 @@ module.exports = {
     getRequestingRidersByRid,
     getRideStartPoint,
     getAccountInfo,
-    getPendingRideStatus
+    getPendingRideStatus,
+    deletePendingRide,
+    deletePendingRiders
 }

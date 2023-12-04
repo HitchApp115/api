@@ -19,6 +19,8 @@ const {
   getRideStartPoint,
   getAccountInfo,
   getPendingRideStatus,
+  deletePendingRide,
+  deletePendingRiders
 } = require("./database_functions/queries");
 const {
   randomId,
@@ -435,6 +437,23 @@ app.post("/rides/approved", async (req, res) => {
     });
   }
 });
+
+app.delete('/rides/remove', async (req,res) => {
+    const { authorization } = req.headers;
+    if (!verifyLoginHash(loginHashMap, authorization, new Date())) {
+      res.status(401).send("User not logged in");
+      return;
+    }
+  //   console.log("AUTHORIZATION:", authorization);
+    const { userId } = loginHashMap[authorization];
+    const { rideId } = req.body
+
+    await deletePendingRide(connection, rideId, userId)
+    await deletePendingRiders(connection, rideId)
+    res.send({
+        status: 'success'
+    })
+})
 
 app.listen(port, () => {
   console.log(`Server running at http://localhost:${port}`);
