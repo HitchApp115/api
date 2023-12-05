@@ -176,8 +176,8 @@ app.post("/rides/create", async (req, res) => {
     riders,
     costPerRider,
     pickUpDistance,
-    sql: response
-  }); 
+    sql: response,
+  });
 });
 //startPoint: string in StartPoint:Lat,Lon
 //maxPrice: float
