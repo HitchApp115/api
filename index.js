@@ -1,9 +1,11 @@
-const express = require("express");
-const axios = require("axios");
-const fs = require("fs");
-const multer = require("multer");
-//test
-const { connection, connect, close } = require("./database_functions/connect");
+const express = require('express');
+const axios = require('axios');
+const fs = require('fs')
+const multer = require('multer')
+
+
+
+const {connection, connect, close } = require('./database_functions/connect')
 const {
   createAccount,
   login,
@@ -42,6 +44,7 @@ const app = express();
 const port = process.env.PORT || 3000;
 const storage = multer.memoryStorage();
 const upload = multer({ storage: storage });
+
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -575,3 +578,4 @@ app.get('/account/verifyToken', (req, res) => {
 app.listen(port, () => {
   console.log(`Server running at http://localhost:${port}`);
 });
+
