@@ -167,24 +167,17 @@ app.post("/rides/create", async (req, res) => {
     pickUpDistance,
     rideStartTime
   );
-  if (response == "Ride already exists") {
-    res.send({
-      message: response
-    }
-    )  
-  } else {
-    res.send({
-      status: "success",
-      rideId,
-      userId,
-      start: `StartPoint:${startPointLat},${startPointLong}`,
-      end: `EndPoint:${endPointLat},${endPointLong}`,
-      riders,
-      costPerRider,
-      pickUpDistance,
-      sql: response
-    });
-  } 
+  res.send({
+    status: "success",
+    rideId,
+    userId,
+    start: `StartPoint:${startPointLat},${startPointLong}`,
+    end: `EndPoint:${endPointLat},${endPointLong}`,
+    riders,
+    costPerRider,
+    pickUpDistance,
+    sql: response
+  }); 
 });
 //startPoint: string in StartPoint:Lat,Lon
 //maxPrice: float
