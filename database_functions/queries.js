@@ -117,7 +117,7 @@ const createNewRide = async (connection, ride_id, driver_id, start_point, driver
                 if (resp.length > 0) {
                     const existingRide = resp[0];
                     console.log(`There is already a ride with driver_id ${driver_id} in pending_active_rides. Existing ride_id: ${existingRide.ride_id}`);
-                    resolve('Ride with the same driver_id already exists.');
+                    resolve('Ride already exists');
                     return;
                 }
             })
