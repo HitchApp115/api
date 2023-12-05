@@ -3,6 +3,8 @@ const axios = require('axios');
 const fs = require('fs')
 const multer = require('multer')
 
+
+
 const {connection, connect, close } = require('./database_functions/connect')
 const { 
     createAccount, 
@@ -25,6 +27,7 @@ const app = express();
 const port = process.env.PORT || 3000;
 const storage = multer.memoryStorage();
 const upload = multer({ storage: storage });
+
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -217,4 +220,5 @@ app.post('/driver/info', upload.fields([{ name: 'driverPhoto', maxCount: 1 }, { 
 app.listen(port, () => {
   console.log(`Server running at http://localhost:${port}`);
 });
+
 
