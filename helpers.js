@@ -19,6 +19,7 @@ const loginHash = (username, time) => {
 }
 
 const passwordSalt = (username, password) => {
+    console.log(username, password)
     const hash = crypto.createHash('sha256');
     hash.update(password)
     hash.update(username)

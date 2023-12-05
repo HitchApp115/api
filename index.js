@@ -50,6 +50,7 @@ connect(connection);
 
 app.post("/account/create", async (req, res) => {
   const { username, email, password, phone, first_name, last_name } = req.body;
+  console.log(username, email, password, phone, first_name, last_name)
   createAccount(
     connection,
     randomId(),
