@@ -1,9 +1,11 @@
-const express = require("express");
-const axios = require("axios");
-const fs = require("fs");
-const multer = require("multer");
-//test
-const { connection, connect, close } = require("./database_functions/connect");
+const express = require('express');
+const axios = require('axios');
+const fs = require('fs')
+const multer = require('multer')
+
+
+
+const {connection, connect, close } = require('./database_functions/connect')
 const {
   createAccount,
   login,
@@ -42,6 +44,7 @@ const app = express();
 const port = process.env.PORT || 3000;
 const storage = multer.memoryStorage();
 const upload = multer({ storage: storage });
+
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -428,13 +431,20 @@ app.post('/rides/start', async (req,res) => {
   }
 //   console.log("AUTHORIZATION:", authorization);
   const { rideId } = req.body
-
-  await markRideAsActive(connection, rideId)
-
-  res.send({
-    status: 'success'
-  })
-
+  const { userId } = loginHashMap[authorization]
+  try {
+    const message = await markRideAsActive(connection, userId, rideId)
+    res.send({
+      status: 'success',
+      message
+    })
+  } catch (error) {
+    console.error("Error starting ride", error);
+    res.status(500).send({
+      status: "error",
+      message: "Internal server error",
+    });
+  }
 })
 
 app.get('/rides/active', async (req, res) => {
@@ -519,12 +529,13 @@ app.post('/rides/start', async (req,res) => {
     res.status(401).send("User not logged in");
     return;
   }
-//   console.log("AUTHORIZATION:", authorization);
+  console.log("AUTHORIZATION:", authorization);
   const { userId } = loginHashMap[authorization];
   const { rideId } = req.body
+  console.log("vlas", userId, rideId)
 
-  await markRideAsActive(connection, rideId)
-
+  const resp = await markRideAsActive(connection, userId, rideId)
+  console.log("vlas", userId, rideId)
   res.send({
     status: 'success'
   })
@@ -558,6 +569,22 @@ app.get('/rides/active', async (req, res) => {
   })
 })
 
+app.get('/account/verifyToken', (req, res) => {
+  const { authorization } = req.headers;
+  if (!verifyLoginHash(loginHashMap, authorization, new Date())) {
+    res.status(401).send("User not logged in");
+    return;
+  }
+  // console.log("AUTHORIZATION:", authorization);
+  const { userId } = loginHashMap[authorization];
+
+  res.send({
+    status: 'success',
+    userId
+  })
+})
+
 app.listen(port, () => {
   console.log(`Server running at http://localhost:${port}`);
 });
+

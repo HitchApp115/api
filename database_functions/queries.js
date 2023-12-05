@@ -17,9 +17,11 @@ const createAccount = (connection, userid, username, email, password, phone, fir
                         callback({ status: 'error', message: 'Duplicate email entry error' }, null);
                     } else if (err.message.includes('phone_num')) {
                         callback({ status: 'error', message: 'Duplicate phone entry error' }, null);
-                    } else {
+                    } else if (err.message.includes('username')){
                         // Other duplicate entry error, call the callback with a generic message
-                        callback({ status: 'error', message: 'Duplicate entry error' }, null);
+                        callback({ status: 'error', message: 'Duplicate username entry error' }, null);
+                    } else {
+                        callback({ status: 'error', message: 'Datbase Error'}, null);
                     }
                 } else {
                     // Other error, call the callback with an error status
@@ -362,16 +364,17 @@ const getPendingRideByRide = (connection, rideId) => {
     });
 }
 
-const markRideAsActive = (connection, rideId) => {
+const markRideAsActive = (connection, userId, rideId) => {
     return new Promise((resolve, reject) => {
         connection.query(
-            'UPDATE pending_active_rides SET is_active=1 WHERE ride_id=?', 
-            [rideId], // Assuming rideId and riderId are the variables holding the IDs you want to query
+            `CALL markRide(?,?)`, 
+            [userId, rideId], // Assuming rideId and riderId are the variables holding the IDs you want to query
             (err, resp) => {
                 if (err){
+                    console.log(err)
                     reject("LLL")
                 }
-                resolve(resp);
+                resolve(resp[0][0].result);
             }
           );
     });
