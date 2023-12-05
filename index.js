@@ -560,6 +560,21 @@ app.get('/rides/active', async (req, res) => {
   })
 })
 
+app.get('/account/verifyToken', (req, res) => {
+  const { authorization } = req.headers;
+  if (!verifyLoginHash(loginHashMap, authorization, new Date())) {
+    res.status(401).send("User not logged in");
+    return;
+  }
+//   console.log("AUTHORIZATION:", authorization);
+  const { userId } = loginHashMap[authorization];
+
+  res.send({
+    status: 'success',
+    userId
+  })
+})
+
 app.listen(port, () => {
   console.log(`Server running at http://localhost:${port}`);
 });
