@@ -563,7 +563,7 @@ app.get('/account/verifyToken', (req, res) => {
     res.status(401).send("User not logged in");
     return;
   }
-//   console.log("AUTHORIZATION:", authorization);
+  // console.log("AUTHORIZATION:", authorization);
   const { userId } = loginHashMap[authorization];
 
   res.send({
