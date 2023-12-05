@@ -2,7 +2,7 @@ const express = require("express");
 const axios = require("axios");
 const fs = require("fs");
 const multer = require("multer");
-
+//test
 const { connection, connect, close } = require("./database_functions/connect");
 const {
   createAccount,
@@ -428,16 +428,6 @@ app.post('/rides/start', async (req,res) => {
 //   console.log("AUTHORIZATION:", authorization);
   const { rideId } = req.body
 
-  let active_ride = (await grabActiveRide(connection, userId))[0].map(v => v['ride_id'])
-
-  if (active_ride.length){
-    res.status(500).send({
-      status: "failure",
-      message: "Active Ride aslready exists"
-    })
-    return
-  }
-
   await markRideAsActive(connection, rideId)
 
   res.send({
@@ -566,7 +556,6 @@ app.get('/rides/active', async (req, res) => {
       ride: rideData
   })
 })
-
 
 app.listen(port, () => {
   console.log(`Server running at http://localhost:${port}`);
