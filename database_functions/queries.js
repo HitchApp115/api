@@ -109,8 +109,8 @@ const createNewRide = async (connection, ride_id, driver_id, start_point, driver
             [driver_id],
             (err, resp) => {
                 if (err) {
-                    console.error('Error checking for existing rides:', selectErr);
-                    reject(selectErr);
+                    console.log('Error checking for existing rides:', selectErr);
+                    resolve(`There was an error checking existing rides`);
                     return;
                 }
                 // If there is an existing ride, resolve the promise
