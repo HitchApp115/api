@@ -339,6 +339,25 @@ app.post("/rides/sendRiderRequest", async (req, res) => {
   }
 });
 
+app.post("/rides/end", async (req, res) => {
+  const { authorization } = req.headers;
+  if (!verifyLoginHash(loginHashMap, authorization, new Date())) {
+    res.status(401).send("User not logged in");
+    return;
+  }
+  //const { userId } = loginHashMap[authorization];
+  const {rideId} = req.body
+  try {
+    const resp = ()
+  } catch (error) {
+    console.error("Error ending ride", error);
+    res.status(500).send({
+      status: "error",
+      message: "Internal server error",
+    });
+  }
+})
+
 // Content-type : multipart/form-data // I'm not too sure whats the formatting for this
 app.post(
   "/driver/info",
