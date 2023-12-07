@@ -37,6 +37,7 @@ const {
   passwordSalt,
   verifyLoginHash,
   getRoutesJSON,
+  formatDateTime
 } = require("./helpers");
 const { start } = require("repl");
 const loginHashMap = JSON.parse(fs.readFileSync("logins.json")); // new Map()
@@ -161,6 +162,8 @@ app.post("/rides/create", async (req, res) => {
     destination.longitude,
   ];
 
+  const formattedStartTime = formatDateTime(rideStartTime);
+console.log(formattedStartTime)
   let response = await createNewRide(
     connection,
     rideId,
@@ -170,7 +173,7 @@ app.post("/rides/create", async (req, res) => {
     riders,
     costPerRider,
     pickUpDistance,
-    rideStartTime
+    formattedStartTime
   );
   res.send({
     status: "success",

@@ -65,10 +65,26 @@ const getDist = async(origin, destination) => {
     return earthRadiusKm * c;
 }
 
+function formatDateTime(inputDateTimeString) {
+    const [datePart, timePart] = inputDateTimeString.split(', ');
+    const [month, day, year] = datePart.split('/');
+    const [time, meridiem] = timePart.split('\u202F'); // Use U+202F as the separator
+    const [hours, minutes, seconds] = time.split(':');
+  
+    let adjustedHours = parseInt(hours, 10);
+    if (meridiem === 'PM' && adjustedHours !== 12) {
+      adjustedHours += 12;
+    }
+    const formattedDateTime = `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')} ${adjustedHours.toString().padStart(2, '0')}:${minutes.padStart(2, '0')}:${seconds.padStart(2, '0')}`;
+    return formattedDateTime;
+  }
+  
+
 module.exports = {
     randomId,
     loginHash,
     passwordSalt,
     verifyLoginHash,
     getRoutesJSON,
+    formatDateTime
 }
