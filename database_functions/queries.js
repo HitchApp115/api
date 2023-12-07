@@ -305,7 +305,7 @@ const getPendingRideStatus = (connection, rider_id) => {
         
 
 async function deletePendingRide(connection, rideId, driverId) {
-    if (activeRide == rideId) {
+    /*if (activeRide == rideId) {
         return new Promise((resolve, reject => {
             connection.query(
                 'CALL CompleteRide(?)',
@@ -320,7 +320,7 @@ async function deletePendingRide(connection, rideId, driverId) {
                 }
             );
         }))
-    }
+    }*/
     return new Promise((resolve, reject) => {
         connection.query(
             'DELETE from pending_active_rides WHERE ride_id=? AND driver_id=?', 

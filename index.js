@@ -349,10 +349,12 @@ app.post("/rides/end", async (req, res) => {
     res.status(401).send("User not logged in");
     return;
   }
-  //const { userId } = loginHashMap[authorization];
+  const { userId } = loginHashMap[authorization];
   const {rideId, totalDistance} = req.body
   try {
     const resp = await completeRide(connection, rideId, totalDistance);
+    await deletePendingRide(connection, rideId, userId)
+    await deletePendingRiders(connection, rideId)
     res.send({
       status: "success",
     });
