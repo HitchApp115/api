@@ -28,7 +28,8 @@ const {
   getAcceptedRidersByRide,
   getPendingRideByRide,
   markRideAsActive,
-  grabActiveRide
+  grabActiveRide,
+  completeRide
 } = require("./database_functions/queries");
 const {
   randomId,
@@ -348,7 +349,10 @@ app.post("/rides/end", async (req, res) => {
   //const { userId } = loginHashMap[authorization];
   const {rideId} = req.body
   try {
-    const resp = ()
+    const resp = await completeRide(connection, rideId);
+    res.send({
+      status: "success",
+    });
   } catch (error) {
     console.error("Error ending ride", error);
     res.status(500).send({
