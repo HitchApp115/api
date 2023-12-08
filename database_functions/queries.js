@@ -305,22 +305,6 @@ const getPendingRideStatus = (connection, rider_id) => {
         
 
 async function deletePendingRide(connection, rideId, driverId) {
-    /*if (activeRide == rideId) {
-        return new Promise((resolve, reject => {
-            connection.query(
-                'CALL CompleteRide(?)',
-                [rideId],
-                (err, resp) => {
-                    if (err){
-                        reject("LLL")
-                    }
-                    console.log(err);
-                    console.log(resp);
-                    resolve(resp);
-                }
-            );
-        }))
-    }*/
     return new Promise((resolve, reject) => {
         connection.query(
             'DELETE from pending_active_rides WHERE ride_id=? AND driver_id=?', 
@@ -439,6 +423,22 @@ const completeRide = (connection, rideId) => {
     });
 };
 
+const riderPickedUp = (connection, rideId, riderId) => {
+    return new Promise((resolve) => {
+        connection.query(
+            `UPDATE ride_requests
+            SET is_picked_up = 2
+            WHERE ride_id = ? AND rider_id = ?`,
+            [rideId, riderId],
+            (err, resp) => {
+                console.log(err);
+                console.log(resp);
+                resolve(resp);
+            }
+        );
+    });
+};
+
 module.exports = {
     createAccount,
     login,
@@ -462,5 +462,6 @@ module.exports = {
     getPendingRideByRide,
     markRideAsActive,
     grabActiveRide,
-    completeRide
+    completeRide,
+    riderPickedUp
 }

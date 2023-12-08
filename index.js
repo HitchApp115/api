@@ -15,8 +15,8 @@ const {
   createDriverInfo,
   resolveRiderRequest,
   sendRiderRequest,
-    removeAcceptedRider,
-    removePendingRider,
+  removeAcceptedRider,
+  removePendingRider,
   getNumRiders,
   getCreatedRidesByDriver,
   getRequestingRidersByRid,
@@ -29,7 +29,8 @@ const {
   getPendingRideByRide,
   markRideAsActive,
   grabActiveRide,
-  completeRide
+  completeRide,
+  riderPickedUp
 } = require("./database_functions/queries");
 const {
   randomId,
@@ -593,6 +594,29 @@ app.get('/rides/active', async (req, res) => {
       riders: ridersData,
       ride: rideData
   })
+})
+
+app.post('/rides/pickup', async (req, res) => {
+  const { authorization } = req.headers;
+  if (!verifyLoginHash(loginHashMap, authorization, new Date())) {
+    res.status(401).send("User not logged in");
+    return;
+  }
+  // console.log("AUTHORIZATION:", authorization);
+  //const { userId } = loginHashMap[authorization];
+  const { rideId, riderId } = req.body;
+  try {
+    const resp = await riderPickedUp(connection, rideId, riderId);
+    res.send({
+      status: "success",
+    });
+  } catch (error) {
+    console.error("Error updating rider pickup status", error);
+    res.status(500).send({
+      status: "error",
+      message: "Internal server error",
+    });
+  }
 })
 
 app.get('/account/verifyToken', (req, res) => {
