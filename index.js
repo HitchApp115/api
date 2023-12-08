@@ -353,8 +353,6 @@ app.post("/rides/end", async (req, res) => {
   const {rideId, totalDistance} = req.body
   try {
     const resp = await completeRide(connection, rideId, totalDistance);
-    await deletePendingRide(connection, rideId, userId)
-    await deletePendingRiders(connection, rideId)
     res.send({
       status: "success",
     });
