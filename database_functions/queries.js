@@ -453,20 +453,6 @@ const ridesAwaitingPickup = (connection, riderId) => {
     });
 };
 
-const ridesAwaitingPickup = (connection, riderId) => {
-    return new Promise((resolve) => {
-        connection.query(
-            `SELECT ride_id,  from ride_requests WHERE rider_id=? and is_picked_up=1`,
-            [riderId],
-            (err, resp) => {
-                console.log(err);
-                console.log(resp);
-                resolve(resp);
-            }
-        );
-    });
-};
-
 module.exports = {
     createAccount,
     login,
