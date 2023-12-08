@@ -29,7 +29,8 @@ const {
   getPendingRideByRide,
   markRideAsActive,
   grabActiveRide,
-  completeRide
+  completeRide,
+  ridesAwaitingPickup
 } = require("./database_functions/queries");
 const {
   randomId,
@@ -163,7 +164,7 @@ app.post("/rides/create", async (req, res) => {
   ];
 
   const formattedStartTime = formatDateTime(rideStartTime);
-console.log(formattedStartTime)
+console.log('2222:', formattedStartTime)
   let response = await createNewRide(
     connection,
     rideId,
@@ -608,6 +609,22 @@ app.get('/account/verifyToken', (req, res) => {
     status: 'success',
     userId
   })
+})
+
+app.get('/account/rideAwaitingPickup', async (req, res) => {
+  const { authorization } = req.headers;
+  if (!verifyLoginHash(loginHashMap, authorization, new Date())) {
+    res.status(401).send("User not logged in");
+    return;
+  }
+  // console.log("AUTHORIZATION:", authorization);
+  const { userId } = loginHashMap[authorization];
+
+  const rides = await ridesAwaitingPickup(connection, userId)
+  send.send({
+    rides
+  })
+
 })
 
 app.listen(port, () => {
