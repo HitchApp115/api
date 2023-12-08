@@ -305,22 +305,6 @@ const getPendingRideStatus = (connection, rider_id) => {
         
 
 async function deletePendingRide(connection, rideId, driverId) {
-    /*if (activeRide == rideId) {
-        return new Promise((resolve, reject => {
-            connection.query(
-                'CALL CompleteRide(?)',
-                [rideId],
-                (err, resp) => {
-                    if (err){
-                        reject("LLL")
-                    }
-                    console.log(err);
-                    console.log(resp);
-                    resolve(resp);
-                }
-            );
-        }))
-    }*/
     return new Promise((resolve, reject) => {
         connection.query(
             'DELETE from pending_active_rides WHERE ride_id=? AND driver_id=?', 
@@ -425,11 +409,41 @@ const removePendingRider = (connecion, userId, rideId) => {
     });
 };
 
-const completeRide = (connection, rideId, totalDistance) => {
+const completeRide = (connection, rideId) => {
     return new Promise((resolve) => {
         connection.query(
-            `CALL CompleteRide(?, ?)`,
-            [rideId, totalDistance],
+            `CALL CompleteRide(?)`,
+            [rideId],
+            (err, resp) => {
+                console.log(err);
+                console.log(resp);
+                resolve(resp);
+            }
+        );
+    });
+};
+
+const riderPickedUp = (connection, rideId, riderId) => {
+    return new Promise((resolve) => {
+        connection.query(
+            `UPDATE ride_requests
+            SET is_picked_up = 2
+            WHERE ride_id = ? AND rider_id = ?`,
+            [rideId, riderId],
+            (err, resp) => {
+                console.log(err);
+                console.log(resp);
+                resolve(resp);
+            }
+        );
+    });
+};
+
+const ridesAwaitingPickup = (connection, riderId) => {
+    return new Promise((resolve) => {
+        connection.query(
+            `SELECT ride_id,  from ride_requests WHERE rider_id=? and is_picked_up=1`,
+            [riderId],
             (err, resp) => {
                 console.log(err);
                 console.log(resp);
@@ -477,5 +491,6 @@ module.exports = {
     markRideAsActive,
     grabActiveRide,
     completeRide,
+    riderPickedUp,
     ridesAwaitingPickup
 }
