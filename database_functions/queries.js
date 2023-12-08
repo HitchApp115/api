@@ -381,26 +381,12 @@ const grabActiveRide = (connection, driverId) => {
 
 
 
-const removeAcceptedRider = (connection, userId, rideId) => {
+const removeRiderRequest = (connection, userId, rideId) => {
     return new Promise((resolve) => {
         connection.query(
-            `CALL RemoveRiderFromAcceptedRequest(?,?)`,
+            `CALL RemoveRiderFromRequest(?,?)`,
             [userId, rideId],
             (err, resp) => {
-                console.log(err);
-                console.log(resp);
-                resolve(resp);
-            }
-        );
-    });
-};
-
-const removePendingRider = (connecion, userId, rideId) => {
-    return new Promise((resolve) => {
-        connecion.query(
-            `CALL RemoveRiderFromPendingRequest(?,?)`,
-            [userId, rideId],
-            (err,resp) => {
                 console.log(err);
                 console.log(resp);
                 resolve(resp);
@@ -462,8 +448,7 @@ module.exports = {
     createDriverInfo,
     resolveRiderRequest,
     sendRiderRequest,
-    removeAcceptedRider,
-    removePendingRider,
+    removeRiderRequest,
     getNumRiders,
     getCreatedRidesByDriver,
     getRequestingRidersByRid,

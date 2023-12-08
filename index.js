@@ -15,8 +15,7 @@ const {
   createDriverInfo,
   resolveRiderRequest,
   sendRiderRequest,
-  removeAcceptedRider,
-  removePendingRider,
+  removeRiderRequest,
   getNumRiders,
   getCreatedRidesByDriver,
   getRequestingRidersByRid,
@@ -651,6 +650,29 @@ app.get('/account/rideAwaitingPickup', async (req, res) => {
   })
 
 })
+
+app.post("/rides/riderRequestRemoval", async (req, res) => {
+  const { authorization } = req.headers;
+  if (!verifyLoginHash(loginHashMap, authorization, new Date())) {
+    res.status(401).send("User not logged in");
+    return;
+  }
+  const { userId } = loginHashMap[authorization];
+  const { rideId } = req.body
+  try {
+    const resp = await removeRiderRequest(connection, userId, rideId);
+    res.send({
+      status: "success",
+    });
+  } catch (error) {
+    console.error("Error removing rider from ride", error);
+    res.status(500).send({
+      status: "error",
+      message: "Internal server error",
+    });
+  }
+});
+
 
 app.listen(port, () => {
   console.log(`Server running at http://localhost:${port}`);
