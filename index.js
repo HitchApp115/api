@@ -350,9 +350,9 @@ app.post("/rides/end", async (req, res) => {
     return;
   }
   const { userId } = loginHashMap[authorization];
-  const {rideId, totalDistance} = req.body
+  const {rideId} = req.body
   try {
-    const resp = await completeRide(connection, rideId, totalDistance);
+    const resp = await completeRide(connection, rideId);
     res.send({
       status: "success",
     });

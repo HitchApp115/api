@@ -425,11 +425,11 @@ const removePendingRider = (connecion, userId, rideId) => {
     });
 };
 
-const completeRide = (connection, rideId, totalDistance) => {
+const completeRide = (connection, rideId) => {
     return new Promise((resolve) => {
         connection.query(
-            `CALL CompleteRide(?, ?)`,
-            [rideId, totalDistance],
+            `CALL CompleteRide(?)`,
+            [rideId],
             (err, resp) => {
                 console.log(err);
                 console.log(resp);
