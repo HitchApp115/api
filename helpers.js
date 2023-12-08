@@ -68,7 +68,7 @@ const getDist = async(origin, destination) => {
 function formatDateTime(inputDateTimeString) {
     const [datePart, timePart] = inputDateTimeString.split(', ');
     const [month, day, year] = datePart.split('/');
-    const [time, meridiem] = timePart.split('\u202F'); // Use U+202F as the separator
+    const [time, meridiem] = timePart.split(' '); // Use U+202F as the separator
     const [hours, minutes, seconds] = time.split(':');
   
     let adjustedHours = parseInt(hours, 10);
