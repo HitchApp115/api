@@ -76,7 +76,7 @@ function formatDateTime(inputDateTimeString) {
       adjustedHours += 12;
     }
     const formattedDateTime = `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')} ${adjustedHours.toString().padStart(2, '0')}:${minutes.padStart(2, '0')}:${seconds.padStart(2, '0')}`;
-    return formattedDateTime;
+    return formattedDateTime.replace(/\u202F/g, '');
   }
   
 
