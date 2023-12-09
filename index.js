@@ -646,7 +646,7 @@ app.get('/account/rideAwaitingPickup', async (req, res) => {
   const rides = await ridesAwaitingPickup(connection, userId)
   res.send({
     status: 'success',
-    rides
+    rides: rides
   })
 
 })
