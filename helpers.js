@@ -66,17 +66,18 @@ const getDist = async(origin, destination) => {
 }
 
 function formatDateTime(inputDateTimeString) {
-    const [datePart, timePart] = inputDateTimeString.split(', ');
-    const [month, day, year] = datePart.split('/');
-    const [time, meridiem] = timePart.split(' '); // Use U+202F as the separator
-    const [hours, minutes, seconds] = time.split(':');
-  
-    let adjustedHours = parseInt(hours, 10);
-    if (meridiem === 'PM' && adjustedHours !== 12) {
-      adjustedHours += 12;
-    }
-    const formattedDateTime = `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')} ${adjustedHours.toString().padStart(2, '0')}:${minutes.padStart(2, '0')}:${seconds.padStart(2, '0')}`;
-    return formattedDateTime.replace(/\u202F/g, '');
+    const dateObject = new Date(inputDateTimeString)
+
+    const pad = (number) => (number < 10 ? '0' + number : number);
+
+    let year = dateObject.getFullYear();
+    let month = pad(dateObject.getMonth() + 1); // Months are zero-indexed
+    let day = pad(dateObject.getDate());
+    let hours = pad(dateObject.getHours());
+    let minutes = pad(dateObject.getMinutes());
+    let seconds = pad(dateObject.getSeconds());
+
+    return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
   }
   
 
