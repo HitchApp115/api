@@ -643,7 +643,7 @@ app.get('/account/rideAwaitingPickup', async (req, res) => {
   // console.log("AUTHORIZATION:", authorization);
   const { userId } = loginHashMap[authorization];
 
-  const rides = await ridesAwaitingPickup(connection, userId)
+  let rides = await ridesAwaitingPickup(connection, userId)
   res.send({
     status: 'success',
     rides: rides
