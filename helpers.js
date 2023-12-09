@@ -68,6 +68,10 @@ const getDist = async(origin, destination) => {
 function formatDateTime(inputDateTimeString) {
     const dateObject = new Date(inputDateTimeString)
 
+    console.log("DT: ", inputDateTimeString, dateObject)
+
+
+
     const pad = (number) => (number < 10 ? '0' + number : number);
 
     let year = dateObject.getFullYear();
