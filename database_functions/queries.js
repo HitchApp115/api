@@ -426,7 +426,7 @@ const riderPickedUp = (connection, rideId, riderId) => {
 const ridesAwaitingPickup = (connection, riderId) => {
     return new Promise((resolve) => {
         connection.query(
-            `SELECT ride_id, rider_id FROM ride_requests WHERE ride_id=? and is_picked_up=1`,
+            `SELECT rider_id, ride_id FROM ride_requests WHERE ride_id = ? and is_picked_up = 1`,
             [riderId],
             (err, resp) => {
                 console.log(err);
