@@ -467,11 +467,13 @@ app.post('/rides/start', async (req,res) => {
     console.error("Error starting ride", error);
     res.status(500).send({
       status: "error",
-      message: "Internal server error",
+      message,
     });
   }
 })
 
+
+//  Gets current active ride where the logged in user is a driver
 app.get('/rides/active', async (req, res) => {
   const { authorization } = req.headers;
   if (!verifyLoginHash(loginHashMap, authorization, new Date())) {
@@ -481,7 +483,10 @@ app.get('/rides/active', async (req, res) => {
 //   console.log("AUTHORIZATION:", authorization);
     const { userId } = loginHashMap[authorization];
 
-  let rideId = (await grabActiveRide(connection, userId))[0]['ride_id']
+  let rideId = await grabActiveRide(connection, userId)
+  if (rideId.length) {
+    rideId = rideId[0]['ride_id']
+  }
 
 
   //  Get the riders and their start points     getRequestingRidersByRid
@@ -546,25 +551,6 @@ app.delete('/rides/remove', async (req,res) => {
     res.send({
         status: 'success'
     })
-})
-
-app.post('/rides/start', async (req,res) => {
-  const { authorization } = req.headers;
-  if (!verifyLoginHash(loginHashMap, authorization, new Date())) {
-    res.status(401).send("User not logged in");
-    return;
-  }
-  console.log("AUTHORIZATION:", authorization);
-  const { userId } = loginHashMap[authorization];
-  const { rideId } = req.body
-  console.log("vlas", userId, rideId)
-
-  const resp = await markRideAsActive(connection, userId, rideId)
-  console.log("vlas", userId, rideId)
-  res.send({
-    status: 'success'
-  })
-
 })
 
 app.get('/rides/active', async (req, res) => {

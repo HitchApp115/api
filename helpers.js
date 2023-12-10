@@ -1,8 +1,6 @@
 const crypto = require('crypto')
 const degreesToRadians = (degrees) => {
-    //console.log("degrees" + degrees)
     return degrees * (Math.PI / 180);
-    
 }
 
 const radiansToDegrees = (rads) => {
@@ -19,7 +17,6 @@ const loginHash = (username, time) => {
 }
 
 const passwordSalt = (username, password) => {
-    console.log(username, password)
     const hash = crypto.createHash('sha256');
     hash.update(password)
     hash.update(username)
@@ -43,16 +40,13 @@ const getRoutesJSON = async (origin, destination) => {
 }
 
 const getDist = async(origin, destination) => {
-    console.log(origin, destination)
     let lat1, lon1, lat2, lon2, dLat, dLon
     lat1 = origin[0]
     lon1 = origin[1]
     
     lat2 = destination[0]
     lon2 = destination[1]
-    //console.log(lat1, lon1, lat2, lon2)
     earthRadiusKm = 6371
-    //console.log(lat1, lat2);
     dLat = degreesToRadians(lat2-lat1);
     dLon = degreesToRadians(lon2-lon1);
     
