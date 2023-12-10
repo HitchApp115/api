@@ -486,6 +486,13 @@ app.get('/rides/active', async (req, res) => {
   let rideId = await grabActiveRide(connection, userId)
   if (rideId.length) {
     rideId = rideId[0]['ride_id']
+  } else{
+    res.send({
+      status: 'success',
+      riders: [],
+      ride: []
+    })
+    return
   }
 
 
