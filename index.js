@@ -162,9 +162,7 @@ app.post("/rides/create", async (req, res) => {
     destination.latitude,
     destination.longitude,
   ];
-  console.log('22221:', rideStartTime)
   const formattedStartTime = formatDateTime(rideStartTime);
-console.log('2222:', formattedStartTime)
   let response = await createNewRide(
     connection,
     rideId,

@@ -86,7 +86,7 @@ const getNearbyRides = async(connection, user_point, maxPrice) => {
     return new Promise((resolve) => {
         //filter database for pickup_dist AND cost_per_rider, TBD to refactor
         connection.query(
-            `SELECT * FROM pending_active_rides WHERE pickup_dist > GET_DIST(?, start_point) AND cost_per_rider <= ?`,
+            `SELECT * FROM pending_active_rides WHERE pickup_dist > GET_DIST(?, start_point) AND cost_per_rider <= ? AND maximum_riders > accepted_riders`,
             [user_point, maxPrice],
             (err, resp) => {
                 console.log('err:', err)
