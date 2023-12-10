@@ -9,7 +9,8 @@ const {connection, connect, close } = require('./database_functions/connect')
 const {
   createAccount,
   login,
-  pollCompletedRides,
+  pollCompletedRidesByRider,
+  pollCompletedRidesByDriver,
   getNearbyRides,
   createNewRide,
   createDriverInfo,
@@ -116,7 +117,7 @@ app.post("/account/login", async (req, res) => {
   res.send({ status: "success", loginToken });
 });
 
-app.get("/rides/completed", (req, res) => {
+app.get("/rides/completedByRider", async (req, res) => {
   const { authorization } = req.headers;
   if (!verifyLoginHash(loginHashMap, authorization, new Date())) {
     res.status(401).send("User not logged in");
@@ -125,8 +126,25 @@ app.get("/rides/completed", (req, res) => {
 
   //const { userId } = loginHashMap.get(authorization)
   const { userId } = loginHashMap[authorization];
-  const rides = pollCompletedRides(connection, userId);
+  const rides = await pollCompletedRidesByRider(connection, userId);
+  console.log(rides);
+  res.send({
+    status: "success",
+    rides,
+  });
+});
 
+app.get("/rides/completedByDriver", async (req, res) => {
+  const { authorization } = req.headers;
+  if (!verifyLoginHash(loginHashMap, authorization, new Date())) {
+    res.status(401).send("User not logged in");
+    return;
+  }
+
+  //const { userId } = loginHashMap.get(authorization)
+  const { userId } = loginHashMap[authorization];
+  const rides = await pollCompletedRidesByDriver(connection, userId);
+  console.log(rides);
   res.send({
     status: "success",
     rides,

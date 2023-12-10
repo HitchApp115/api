@@ -50,10 +50,29 @@ const login = async (connection, username, password) => {
     })
 }
 
-const pollCompletedRides = async (connection, userId) => {
+const pollCompletedRidesByRider = async (connection, userId) => {
     return new Promise((resolve) => {
         connection.query(
-           `SELECT * from completed_rides_by_rider WHERE rider_id=?`,
+           `SELECT cr.* 
+           FROM completed_rides cr
+           INNER JOIN completed_rides_by_rider crbr ON cr.ride_id = crbr.ride_id
+           WHERE crbr.rider_id=?`,
+             [userId],
+             (err, resp) => {
+                console.log('err:', err)
+                console.log('resp:', resp)
+                resolve(resp)
+            }
+        )
+    })
+}
+
+const pollCompletedRidesByDriver = async (connection, userId) => {
+    return new Promise((resolve) => {
+        connection.query(
+           `SELECT * 
+           FROM completed_rides
+           WHERE driver_id=?`,
              [userId],
              (err, resp) => {
                 console.log('err:', err)
@@ -440,7 +459,8 @@ const ridesAwaitingPickup = (connection, riderId) => {
 module.exports = {
     createAccount,
     login,
-    pollCompletedRides,
+    pollCompletedRidesByRider,
+    pollCompletedRidesByDriver,
     getNearbyRides,
     createNewRide,
     createDriverInfo,
