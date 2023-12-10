@@ -53,7 +53,7 @@ const login = async (connection, username, password) => {
 const pollCompletedRidesByRider = async (connection, userId) => {
     return new Promise((resolve) => {
         connection.query(
-           `SELECT cr.* 
+           `SELECT cr.*, crbr.rider_cost
            FROM completed_rides cr
            INNER JOIN completed_rides_by_rider crbr ON cr.ride_id = crbr.ride_id
            WHERE crbr.rider_id=?`,
