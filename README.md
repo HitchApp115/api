@@ -83,8 +83,6 @@ The main server file using Express.js. It handles HTTP requests, integrates midd
 - **Inputs**: Authorization token.
 - **Response**: List of pending rides and requesting riders.
 
-[...]
-
 ### Get Active Rides - GET `/rides/active`
 - **Purpose**: To retrieve active rides for a user.
 - **Inputs**: Authorization token.
