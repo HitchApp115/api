@@ -101,6 +101,7 @@ const getNumRiders = async(connection, ride_id) => {
 //user_point: string in format Name:Lat,Lon
 //maxPrice: double
 const getNearbyRides = async(connection, userStartPoint, userEndPoint, maxDropoffDist, maxPrice) => {
+    console.log("getNearbyRides: ", userStartPoint, userEndPoint, maxDropoffDist, maxPrice)
     return new Promise((resolve) => {
         //filter database for pickup_dist AND cost_per_rider, TBD to refactor
         connection.query(
@@ -108,6 +109,7 @@ const getNearbyRides = async(connection, userStartPoint, userEndPoint, maxDropof
             [userStartPoint, maxPrice, maxDropoffDist, userEndPoint],
             (err, resp) => {
                 console.log('getNearbyRides err:', err)
+                console.log('getNearbyRides resp: ', resp)
                 resolve(resp)
             }
         )
