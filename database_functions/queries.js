@@ -21,7 +21,7 @@ const createAccount = (connection, userid, username, email, password, phone, fir
                         // Other duplicate entry error, call the callback with a generic message
                         callback({ status: 'error', message: 'Duplicate username entry error' }, null);
                     } else {
-                        callback({ status: 'error', message: 'Datbase Error'}, null);
+                        callback({ status: 'error', message: 'Database Error'}, null);
                     }
                 } else {
                     // Other error, call the callback with an error status
