@@ -311,7 +311,7 @@ const getAccountInfo = (connection, userId) => {
 const getPendingRideStatus = (connection, rider_id) => {
     return new Promise((resolve) => {
         connection.query(
-            'SELECT rr.*, par.cost_per_rider, par.driver_dest FROM ride_requests AS rr JOIN pending_active_rides AS par ON rr.ride_id = par.ride_id WHERE rr.rider_id = ?',  
+            'SELECT rr.*, par.cost_per_rider, par.driver_dest, par.ride_start_time FROM ride_requests AS rr JOIN pending_active_rides AS par ON rr.ride_id = par.ride_id WHERE rr.rider_id = ?',  
             [rider_id], // Assuming rideId and riderId are the variables holding the IDs you want to query
             (err, resp) => {
                 resolve(resp);
@@ -368,7 +368,8 @@ const getPendingRideByRide = (connection, rideId) => {
 const markRideAsActive = (connection, userId, rideId) => {
     return new Promise((resolve, reject) => {
         connection.query(
-            `CALL MarkRide(?,?)`, 
+            `CALL MarkRide(?,?);
+            `, 
             [userId, rideId], // Assuming rideId and riderId are the variables holding the IDs you want to query
             (err, resp) => {
                 if (err){

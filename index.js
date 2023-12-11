@@ -479,7 +479,8 @@ app.post('/rides/start', async (req,res) => {
     const message = await markRideAsActive(connection, userId, rideId)
     res.send({
       status: 'success',
-      message
+      message,
+      
     })
   } catch (error) {
     console.error("Error starting ride", error);
