@@ -91,7 +91,6 @@ const getNumRiders = async(connection, ride_id) => {
             [ride_id],
             (err, resp) => {
                 console.log('err:', err)
-                console.log('resp:', resp)
                 resolve(resp)
             }
         )
@@ -108,8 +107,7 @@ const getNearbyRides = async(connection, userStartPoint, userEndPoint, maxDropof
             `SELECT * FROM pending_active_rides WHERE pickup_dist > GET_DIST(?, start_point) AND cost_per_rider <= ? AND maximum_riders > accepted_riders AND ? > GET_DIST(?, driver_dest)`,
             [userStartPoint, maxPrice, maxDropoffDist, userEndPoint],
             (err, resp) => {
-                console.log('err:', err)
-                console.log('resp:', resp)
+                console.log('getNearbyRides err:', err)
                 resolve(resp)
             }
         )
