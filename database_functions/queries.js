@@ -101,12 +101,12 @@ const getNumRiders = async(connection, ride_id) => {
 //connection: MYSQL instance
 //user_point: string in format Name:Lat,Lon
 //maxPrice: double
-const getNearbyRides = async(connection, user_point, maxPrice) => {
+const getNearbyRides = async(connection, userStartPoint, userEndPoint, maxDropoffDist, maxPrice) => {
     return new Promise((resolve) => {
         //filter database for pickup_dist AND cost_per_rider, TBD to refactor
         connection.query(
-            `SELECT * FROM pending_active_rides WHERE pickup_dist > GET_DIST(?, start_point) AND cost_per_rider <= ? AND maximum_riders > accepted_riders`,
-            [user_point, maxPrice],
+            `SELECT * FROM pending_active_rides WHERE pickup_dist > GET_DIST(?, start_point) AND cost_per_rider <= ? AND maximum_riders > accepted_riders AND ? > GET_DIST(?, driver_dest)`,
+            [userStartPoint, maxPrice, maxDropoffDist, userEndPoint],
             (err, resp) => {
                 console.log('err:', err)
                 console.log('resp:', resp)

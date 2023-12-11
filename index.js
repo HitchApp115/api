@@ -207,9 +207,9 @@ app.post("/rides/create", async (req, res) => {
 //startPoint: string in StartPoint:Lat,Lon
 //maxPrice: float
 app.get("/rides/view", async (req, res) => {
-  const { startPoint, maxPrice } = req.query;
+  const { startPoint, endPoint, maxDropoffDist, maxPrice } = req.query;
   // get should use req.query
-  let rides = await getNearbyRides(connection, startPoint, maxPrice);
+  let rides = await getNearbyRides(connection, startPoint, endPoint, maxDropoffDist, maxPrice);
   res.send({
     status: "success",
     rides,
