@@ -50,10 +50,29 @@ const login = async (connection, username, password) => {
     })
 }
 
-const pollCompletedRides = async (connection, userId) => {
+const pollCompletedRidesByRider = async (connection, userId) => {
     return new Promise((resolve) => {
         connection.query(
-           `SELECT * from completed_rides_by_rider WHERE rider_id=?`,
+           `SELECT cr.*, crbr.rider_cost
+           FROM completed_rides cr
+           INNER JOIN completed_rides_by_rider crbr ON cr.ride_id = crbr.ride_id
+           WHERE crbr.rider_id=?`,
+             [userId],
+             (err, resp) => {
+                console.log('err:', err)
+                console.log('resp:', resp)
+                resolve(resp)
+            }
+        )
+    })
+}
+
+const pollCompletedRidesByDriver = async (connection, userId) => {
+    return new Promise((resolve) => {
+        connection.query(
+           `SELECT * 
+           FROM completed_rides
+           WHERE driver_id=?`,
              [userId],
              (err, resp) => {
                 console.log('err:', err)
@@ -72,7 +91,6 @@ const getNumRiders = async(connection, ride_id) => {
             [ride_id],
             (err, resp) => {
                 console.log('err:', err)
-                console.log('resp:', resp)
                 resolve(resp)
             }
         )
@@ -82,15 +100,16 @@ const getNumRiders = async(connection, ride_id) => {
 //connection: MYSQL instance
 //user_point: string in format Name:Lat,Lon
 //maxPrice: double
-const getNearbyRides = async(connection, user_point, maxPrice) => {
+const getNearbyRides = async(connection, userStartPoint, userEndPoint, maxDropoffDist, maxPrice) => {
+    console.log("getNearbyRides: ", userStartPoint, userEndPoint, maxDropoffDist, maxPrice)
     return new Promise((resolve) => {
         //filter database for pickup_dist AND cost_per_rider, TBD to refactor
         connection.query(
-            `SELECT * FROM pending_active_rides WHERE pickup_dist > GET_DIST(?, start_point) AND cost_per_rider <= ?`,
-            [user_point, maxPrice],
+            `SELECT * FROM pending_active_rides WHERE pickup_dist > GET_DIST(?, start_point) AND cost_per_rider <= ? AND maximum_riders > accepted_riders AND ? > GET_DIST(?, driver_dest)`,
+            [userStartPoint, maxPrice, maxDropoffDist, userEndPoint],
             (err, resp) => {
-                console.log('err:', err)
-                console.log('resp:', resp)
+                console.log('getNearbyRides err:', err)
+                console.log('getNearbyRides resp: ', resp)
                 resolve(resp)
             }
         )
@@ -292,11 +311,9 @@ const getAccountInfo = (connection, userId) => {
 const getPendingRideStatus = (connection, rider_id) => {
     return new Promise((resolve) => {
         connection.query(
-            'SELECT * FROM ride_requests WHERE rider_id = ?', 
+            'SELECT rr.*, par.cost_per_rider, par.driver_dest, par.ride_start_time FROM ride_requests AS rr JOIN pending_active_rides AS par ON rr.ride_id = par.ride_id WHERE rr.rider_id = ?',  
             [rider_id], // Assuming rideId and riderId are the variables holding the IDs you want to query
             (err, resp) => {
-                // console.log(err);
-                // console.log("response ",resp[0]['accepted']);
                 resolve(resp);
             }
           );
@@ -351,7 +368,8 @@ const getPendingRideByRide = (connection, rideId) => {
 const markRideAsActive = (connection, userId, rideId) => {
     return new Promise((resolve, reject) => {
         connection.query(
-            `CALL MarkRide(?,?)`, 
+            `CALL MarkRide(?,?);
+            `, 
             [userId, rideId], // Assuming rideId and riderId are the variables holding the IDs you want to query
             (err, resp) => {
                 if (err){
@@ -428,7 +446,7 @@ const riderPickedUp = (connection, rideId, riderId) => {
 const ridesAwaitingPickup = (connection, riderId) => {
     return new Promise((resolve) => {
         connection.query(
-            `SELECT ride_id,  from ride_requests WHERE rider_id=? and is_picked_up=1`,
+            `SELECT * from ride_requests WHERE rider_id = ? and is_picked_up = 1`,
             [riderId],
             (err, resp) => {
                 console.log(err);
@@ -442,7 +460,8 @@ const ridesAwaitingPickup = (connection, riderId) => {
 module.exports = {
     createAccount,
     login,
-    pollCompletedRides,
+    pollCompletedRidesByRider,
+    pollCompletedRidesByDriver,
     getNearbyRides,
     createNewRide,
     createDriverInfo,

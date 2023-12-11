@@ -9,7 +9,8 @@ const {connection, connect, close } = require('./database_functions/connect')
 const {
   createAccount,
   login,
-  pollCompletedRides,
+  pollCompletedRidesByRider,
+  pollCompletedRidesByDriver,
   getNearbyRides,
   createNewRide,
   createDriverInfo,
@@ -116,7 +117,7 @@ app.post("/account/login", async (req, res) => {
   res.send({ status: "success", loginToken });
 });
 
-app.get("/rides/completed", (req, res) => {
+app.get("/rides/completedByRider", async (req, res) => {
   const { authorization } = req.headers;
   if (!verifyLoginHash(loginHashMap, authorization, new Date())) {
     res.status(401).send("User not logged in");
@@ -125,8 +126,25 @@ app.get("/rides/completed", (req, res) => {
 
   //const { userId } = loginHashMap.get(authorization)
   const { userId } = loginHashMap[authorization];
-  const rides = pollCompletedRides(connection, userId);
+  const rides = await pollCompletedRidesByRider(connection, userId);
+  console.log(rides);
+  res.send({
+    status: "success",
+    rides,
+  });
+});
 
+app.get("/rides/completedByDriver", async (req, res) => {
+  const { authorization } = req.headers;
+  if (!verifyLoginHash(loginHashMap, authorization, new Date())) {
+    res.status(401).send("User not logged in");
+    return;
+  }
+
+  //const { userId } = loginHashMap.get(authorization)
+  const { userId } = loginHashMap[authorization];
+  const rides = await pollCompletedRidesByDriver(connection, userId);
+  console.log(rides);
   res.send({
     status: "success",
     rides,
@@ -162,9 +180,7 @@ app.post("/rides/create", async (req, res) => {
     destination.latitude,
     destination.longitude,
   ];
-
   const formattedStartTime = formatDateTime(rideStartTime);
-console.log('2222:', formattedStartTime)
   let response = await createNewRide(
     connection,
     rideId,
@@ -191,9 +207,9 @@ console.log('2222:', formattedStartTime)
 //startPoint: string in StartPoint:Lat,Lon
 //maxPrice: float
 app.get("/rides/view", async (req, res) => {
-  const { startPoint, maxPrice } = req.query;
+  const { startPoint, endPoint, maxDropoffDist, maxPrice } = req.query;
   // get should use req.query
-  let rides = await getNearbyRides(connection, startPoint, maxPrice);
+  let rides = await getNearbyRides(connection, startPoint, endPoint, maxDropoffDist, maxPrice);
   res.send({
     status: "success",
     rides,
@@ -463,17 +479,20 @@ app.post('/rides/start', async (req,res) => {
     const message = await markRideAsActive(connection, userId, rideId)
     res.send({
       status: 'success',
-      message
+      message,
+      
     })
   } catch (error) {
     console.error("Error starting ride", error);
     res.status(500).send({
       status: "error",
-      message: "Internal server error",
+      message,
     });
   }
 })
 
+
+//  Gets current active ride where the logged in user is a driver
 app.get('/rides/active', async (req, res) => {
   const { authorization } = req.headers;
   if (!verifyLoginHash(loginHashMap, authorization, new Date())) {
@@ -483,7 +502,17 @@ app.get('/rides/active', async (req, res) => {
 //   console.log("AUTHORIZATION:", authorization);
     const { userId } = loginHashMap[authorization];
 
-  let rideId = (await grabActiveRide(connection, userId))[0]['ride_id']
+  let rideId = await grabActiveRide(connection, userId)
+  if (rideId.length) {
+    rideId = rideId[0]['ride_id']
+  } else{
+    res.send({
+      status: 'success',
+      riders: [],
+      ride: []
+    })
+    return
+  }
 
 
   //  Get the riders and their start points     getRequestingRidersByRid
@@ -548,25 +577,6 @@ app.delete('/rides/remove', async (req,res) => {
     res.send({
         status: 'success'
     })
-})
-
-app.post('/rides/start', async (req,res) => {
-  const { authorization } = req.headers;
-  if (!verifyLoginHash(loginHashMap, authorization, new Date())) {
-    res.status(401).send("User not logged in");
-    return;
-  }
-  console.log("AUTHORIZATION:", authorization);
-  const { userId } = loginHashMap[authorization];
-  const { rideId } = req.body
-  console.log("vlas", userId, rideId)
-
-  const resp = await markRideAsActive(connection, userId, rideId)
-  console.log("vlas", userId, rideId)
-  res.send({
-    status: 'success'
-  })
-
 })
 
 app.get('/rides/active', async (req, res) => {
@@ -643,10 +653,10 @@ app.get('/account/rideAwaitingPickup', async (req, res) => {
   // console.log("AUTHORIZATION:", authorization);
   const { userId } = loginHashMap[authorization];
 
-  const rides = await ridesAwaitingPickup(connection, userId)
-  send.send({
+  let rides = await ridesAwaitingPickup(connection, userId)
+  res.send({
     status: 'success',
-    rides
+    rides: rides
   })
 
 })
