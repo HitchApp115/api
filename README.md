@@ -4,6 +4,7 @@
 
 ### Running Server Locally
 1. Clone this repo
+1. `cd` into the cloned repo
 1. Run `npm i`
 1. Run `npm run start`
 
@@ -16,7 +17,7 @@ And now the Hitch API Server is running locally at your decided port and IPv4 ad
 1. Scale infrastrucutre as needed
 1. *Optionally: Link your domain to the hosted application*
 
-And now the Hitch API Server is running on DigitalOceans servers at the url provided by them or at the domain linked
+And now the Hitch API Server is running on DigitalOceans servers at the url provided by them or at the domain linked. Each time your release branch has a push made, the App Platform will automatically update the hosted server version
 ## User Guide
 
 1. Host the Hitch API either locally or on DigitalOcean
