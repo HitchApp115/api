@@ -1,6 +1,3 @@
-// Install required packages:
-// npm install mysql mocha chai
-
 const mysql = require('mysql');
 const chai = require('chai');
 const expect = chai.expect;
@@ -20,19 +17,19 @@ completeRide, removeRiderRequest, markRideAsActive, grabActiveRide,
 getCreatedRidesByDriver, getRequestingRidersByRid, getRideStartPoint,
 getAccountInfo, getPendingRideStatus, resolveRiderRequest, sendRiderRequest,
 getAcceptedRidersByRide, deletePendingRiders, getPendingRideByRide, deletePendingRide, 
-riderPickedUp, ridesAwaitingPickup, createNewRide} = require('../api/database_functions/queries');
+riderPickedUp, ridesAwaitingPickup, createNewRide} = require('../database_functions/queries');
 
 
-  describe('*createAccount function*', () => {
+  describe('*create Driver function*', () => {
     it('attempt to create an account into the database', (done) => {
         // Test data
         const testUserId = 100;
-        const testUsername = 'aofilan3';
-        const testEmail = 'aofilan3@ucsc.edu';
+        const testUsername = 'driver_0';
+        const testEmail = 'driver@ucsc.edu';
         const testPassword = 'hello';
         const testPhone = '7063986078';
-        const testFirstName = 'Andrei ';
-        const testLastName = 'Ofilan';
+        const testFirstName = 'Test ';
+        const testLastName = 'Dummy0';
 
         createAccount(connection, testUserId, testUsername, testEmail, 
           testPassword, testPhone, testFirstName, testLastName, (err, result) => {
@@ -51,11 +48,41 @@ riderPickedUp, ridesAwaitingPickup, createNewRide} = require('../api/database_fu
     });
 });
 
+describe('*create Rider function*', () => {
+  it('attempt to create an account into the database', (done) => {
+      // Test data
+      const testUserId = 101;
+      const testUsername = 'rider_0';
+      const testEmail = 'rider@ucsc.edu';
+      const testPassword = 'hello';
+      const testPhone = '7083986078';
+      const testFirstName = 'Test ';
+      const testLastName = 'Dummy1';
+
+      createAccount(connection, testUserId, testUsername, testEmail, 
+        testPassword, testPhone, testFirstName, testLastName, (err, result) => {
+          // Check for errors
+          if (err) {
+              // Fail the test if there is an error
+              done(err);
+          } else {
+              // Print the result
+              console.log('Given Response:', result);
+
+              // Done with the test
+              done();
+          }
+      });
+  });
+});
+
+
+
   describe('*login function*', () => {
     it('should retrieve user_id without errors', (done) => {
 
         // Test data
-        const testUsername = 'aofilan3';
+        const testUsername = 'driver_0';
         const testPassword = 'hello';
 
         // Call the login function
@@ -77,10 +104,59 @@ riderPickedUp, ridesAwaitingPickup, createNewRide} = require('../api/database_fu
     });
 });
 
-describe('*GetAccountInfo function*', () => {
+describe('*login function*', () => {
+  it('should retrieve user_id without errors', (done) => {
+
+      // Test data
+      const testUsername = 'rider_0';
+      const testPassword = 'hello';
+
+      // Call the login function
+      login(connection, testUsername, testPassword)
+          .then((result) => {
+              // Print the result
+              console.log('Given Response', result);
+
+              // Done with the test
+              done();
+          })
+          .catch((err) => {
+              // Print the error
+              console.error('Given Error:', err);
+
+              // Done with the test
+              done();
+          });
+  });
+});
+
+describe('*GetAccountInfo for Driver function*', () => {
   it('should show account info without errors', (done) => {
     // Test data
     const testuserid = 100;
+
+    getAccountInfo(connection, testuserid)
+      .then((result) => {
+      // Print the result
+      console.log('Given Response', result);
+
+      // Done with the test
+      done();
+    })
+    .catch((err) => {
+      // Print the error
+      console.error('Given Error:', err);
+
+      // Done with the test
+      done();
+    });
+  });
+}); 
+
+describe('*GetAccountInfo for Rider function*', () => {
+  it('should show account info without errors', (done) => {
+    // Test data
+    const testuserid = 101;
 
     getAccountInfo(connection, testuserid)
       .then((result) => {
@@ -145,11 +221,11 @@ describe('*createNewRide function*', () => {
     // Test data
     const testRideId = 2;
     const testDriverId = 100;
-    const testStartPoint = 'Point A';
-    const testDriverDest = 'Point B';
+    const testStartPoint = 'University of California Santa Cruz, Santa Cruz, CA, USA:36.9905, 122.0584';
+    const testDriverDest = 'Capitola Mall, Capitola, CA, USA: 36.9757837,-121.9669047';
     const testRiders = 3;
     const testCostPerRider = 10;
-    const testPickupDist = 5;
+    const testPickupDist = 100000000;
     const testRideStartTime = new Date(); // Assuming ride start time is a Date object
 
     try {
@@ -171,166 +247,12 @@ describe('*createNewRide function*', () => {
   });
 });
 
-
-
-describe('*pollCompletedRides by Rider function*', () => {
-  it('should poll completed rides by rider without errors', (done) => {
+describe('*Get Created Rides by Driver function*', () => {
+  it('should show created rides by driver without errors', (done) => {
     // Test data
-    const userId = 100;
+    const testdriverid = 100;
 
-    // Call the pollCompletedRides function
-    pollCompletedRidesByRider(connection, userId)
-      .then((result) => {
-      // Print the result
-      console.log('Given Response', result);
-
-      // Done with the test
-      done();
-    })
-    .catch((err) => {
-      // Print the error
-      console.error('Given Error:', err);
-
-      // Done with the test
-      done();
-    });
-  });
-}); 
-
-describe('*pollCompletedRides by Driver function*', () => {
-  it('should poll completed rides by Driver without errors', (done) => {
-    // Test data
-    const userId = 100;
-
-    // Call the pollCompletedRides function
-    pollCompletedRidesByDriver(connection, userId)
-      .then((result) => {
-      // Print the result
-      console.log('Given Response', result);
-
-      // Done with the test
-      done();
-    })
-    .catch((err) => {
-      // Print the error
-      console.error('Given Error:', err);
-
-      // Done with the test
-      done();
-    });
-  });
-}); 
-
-
-describe('*Get Nearby Rides function*', () => {
-  it('should be able to find nearby rides without errors', (done) => {
-    // Test data
-    const userstart_point = ('Point A',8);
-    const userend_point = ('Point B', 4);
-    const user_maxdist = 2
-    const maxPrice = 8.00;
-
-    getNearbyRides(connection, userstart_point, userend_point, user_maxdist, maxPrice,)
-      .then((result) => {
-      // Print the result
-      console.log('Given Response', result);
-
-      // Done with the test
-      done();
-    })
-    .catch((err) => {
-      // Print the error
-      console.error('Given Error:', err);
-
-      // Done with the test
-      done();
-    });
-  });
-});
-
-
-
-describe('*Accepting Ride by Ride function*', () => {
-  it('should show acccepted rides without errors', (done) => {
-    // Test data
-    const testrideid = 2;
-
-    getAcceptedRidersByRide(connection, testrideid)
-      .then((result) => {
-      // Print the result
-      console.log('Given Response', result);
-
-      // Done with the test
-      done();
-    })
-    .catch((err) => {
-      // Print the error
-      console.error('Given Error:', err);
-
-      // Done with the test
-      done();
-    });
-  });
-}); 
-
-
-describe('*Get Pending Ride Status function*', () => {
-  it('should show pending ride status without errors', (done) => {
-    // Test data
-    const testrideid = 2;
-
-    getPendingRideStatus(connection, testrideid)
-      .then((result) => {
-      // Print the result
-      console.log('Given Response', result);
-
-      // Done with the test
-      done();
-    })
-    .catch((err) => {
-      // Print the error
-      console.error('Given Error:', err);
-
-      // Done with the test
-      done();
-    });
-  });
-}); 
-
-
-describe('*Pending Ride by Ride function*', () => {
-  it('should show pending rides without errors', (done) => {
-    // Test data
-    const testrideid = 2;
-
-    getPendingRideByRide(connection, testrideid)
-      .then((result) => {
-      // Print the result
-      console.log('Given Response', result);
-
-      // Done with the test
-      done();
-    })
-    .catch((err) => {
-      // Print the error
-      console.error('Given Error:', err);
-
-      // Done with the test
-      done();
-    });
-  });
-}); 
-
-describe('*SendRiderRequest function*', () => {
-  it('should show pending rides without errors', (done) => {
-    // Test data
-    const testrideid = 2;
-    const testuserid = 50;
-    const testridestartpoint = 35;
-    const testriderstartpoint = 50;
-  
-    sendRiderRequest(connection, testuserid, testrideid, testridestartpoint, 
-      testriderstartpoint, testriderstartpoint)
+    getCreatedRidesByDriver(connection, testdriverid)
       .then((result) => {
       // Print the result
       console.log('Given Response', result);
@@ -371,13 +293,12 @@ describe('*Get Ride Start Point function*', () => {
   });
 }); 
 
-describe('*Resolve Rider Request function*', () => {
-  it('should resolve rider request without errors', (done) => {
+describe('*Delete Pending Riders function*', () => {
+  it('should delete Pending Rides without errors', (done) => {
     // Test data
     const testrideid = 2;
-    const testriderid = 50;
 
-    resolveRiderRequest(connection, testrideid, testriderid)
+    deletePendingRiders(connection, testrideid)
       .then((result) => {
       // Print the result
       console.log('Given Response', result);
@@ -395,13 +316,171 @@ describe('*Resolve Rider Request function*', () => {
   });
 }); 
 
-
-describe('*Get Created Rides by Driver function*', () => {
-  it('should show created rides by driver without errors', (done) => {
+describe('*Delete Pending Rides function*', () => {
+  it('should count the amount of rides waiting without errors', (done) => {
     // Test data
+    const testrideid = 2;
     const testdriverid = 100;
 
-    getCreatedRidesByDriver(connection, testdriverid)
+    deletePendingRide(connection, testrideid, testdriverid)
+      .then((result) => {
+      // Print the result
+      console.log('Given Response', result);
+
+      // Done with the test
+      done();
+    })
+    .catch((err) => {
+      // Print the error
+      console.error('Given Error:', err);
+
+      // Done with the test
+      done();
+    });
+  });
+}); 
+
+describe('*createNewRide function*', () => {
+  it('should create a new ride in the database', async () => {
+    // Test data
+    const testRideId = 2;
+    const testDriverId = 100;
+    const testStartPoint = 'University of California Santa Cruz, Santa Cruz, CA, USA:36.9905, 122.0584';
+    const testDriverDest = 'Capitola Mall, Capitola, CA, USA: 36.9757837,-121.9669047';
+    const testRiders = 3;
+    const testCostPerRider = 10;
+    const testPickupDist = 100000000;
+    const testRideStartTime = new Date(); // Assuming ride start time is a Date object
+
+    try {
+      const result = await createNewRide(connection, testRideId, testDriverId, testStartPoint,
+        testDriverDest, testRiders,testCostPerRider, testPickupDist, testRideStartTime);
+
+      // Print the result
+      console.log('Given Response:', result);
+
+      // You can add assertions here if needed
+
+    } catch (err) {
+      // Print the error
+      console.error('Given Error:', err);
+
+      // Fail the test if an error occurs
+      throw err;
+    }
+  });
+});
+
+describe('*Get Nearby Rides function*', () => {
+  it('should be able to find nearby rides without errors', (done) => {
+    // Test data
+    const userstart_point = 'Lighthouse Field State Beach, Santa Cruz, CA, USA:36.95339480000001,-122.0288273';
+    const userend_point = 'EndPoint:36.957292,-122.0571037';
+    const user_maxdist = 1000000000;
+    const maxPrice = 8.00;
+
+    getNearbyRides(connection, userstart_point, userend_point, user_maxdist, maxPrice,)
+      .then((result) => {
+      // Print the result
+      console.log('Given Response', result);
+
+      // Done with the test
+      done();
+    })
+    .catch((err) => {
+      // Print the error
+      console.error('Given Error:', err);
+
+      // Done with the test
+      done();
+    });
+  });
+});
+
+describe('*Pending Ride by Ride function*', () => {
+  it('should show pending rides without errors', (done) => {
+    // Test data
+    const testrideid = 2;
+
+    getPendingRideByRide(connection, testrideid)
+      .then((result) => {
+      // Print the result
+      console.log('Given Response', result);
+
+      // Done with the test
+      done();
+    })
+    .catch((err) => {
+      // Print the error
+      console.error('Given Error:', err);
+
+      // Done with the test
+      done();
+    });
+  });
+}); 
+
+describe('*SendRiderRequest function*', () => {
+  it('should show pending rides without errors', (done) => {
+    // Test data
+    const testrideid = 2;
+    const testuserid = 101;
+    const testridestartpoint = 'Lighthouse Field State Beach, Santa Cruz, CA, USA:36.95339480000001,-122.0288273';
+    const testriderstartpoint = 'EndPoint:36.957292,-122.0571037';
+  
+    sendRiderRequest(connection, testuserid, testrideid, testridestartpoint, 
+      testriderstartpoint, testriderstartpoint)
+      .then((result) => {
+      // Print the result
+      console.log('Given Response', result);
+
+      // Done with the test
+      done();
+    })
+    .catch((err) => {
+      // Print the error
+      console.error('Given Error:', err);
+
+      // Done with the test
+      done();
+    });
+  });
+}); 
+
+describe('*Remove Rider function*', () => {
+  it('should remove rider request without errors', (done) => {
+    // Test data
+    const testuserid = 101;
+    const testrideid = 2;
+
+    removeRiderRequest(connection, testuserid, testrideid)
+      .then((result) => {
+      // Print the result
+      console.log('Given Response', result);
+
+      // Done with the test
+      done();
+    })
+    .catch((err) => {
+      // Print the error
+      console.error('Given Error:', err);
+
+      // Done with the test
+      done();
+    });
+  });
+}); 
+
+describe('*SendRiderRequest function*', () => {
+  it('should show pending rides without errors', (done) => {
+    // Test data
+    const testrideid = 2;
+    const testuserid = 101;
+    const testridestartpoint = 'Lighthouse Field State Beach, Santa Cruz, CA, USA:36.95339480000001,-122.0288273';
+    const testriderstartpoint = 'EndPoint:36.957292,-122.0571037';
+  
+    sendRiderRequest(connection, testuserid, testrideid, testridestartpoint, 
+      testriderstartpoint, testriderstartpoint)
       .then((result) => {
       // Print the result
       console.log('Given Response', result);
@@ -442,8 +521,83 @@ describe('*Get Requesting Riders by R_ID function*', () => {
   });
 }); 
 
-describe('*Mark Rider as Active function*', () => {
-  it('should mark rider as active without errors', (done) => {
+
+describe('*Get Pending Ride Status function*', () => {
+  it('should show pending ride status without errors', (done) => {
+    // Test data
+    const testriderid = 101;
+
+    getPendingRideStatus(connection, testriderid)
+      .then((result) => {
+      // Print the result
+      console.log('Given Response', result);
+
+      // Done with the test
+      done();
+    })
+    .catch((err) => {
+      // Print the error
+      console.error('Given Error:', err);
+
+      // Done with the test
+      done();
+    });
+  });
+}); 
+
+describe('*Resolve Rider Request function*', () => {
+  it('should resolve rider request without errors', (done) => {
+    // Test data
+    const testrideid = 2;
+    const testriderid = 101;
+    const acceptRider = 1;
+
+    resolveRiderRequest(connection, testrideid, testriderid, acceptRider)
+      .then((result) => {
+      // Print the result
+      console.log('Given Response', result);
+
+      // Done with the test
+      done();
+    })
+    .catch((err) => {
+      // Print the error
+      console.error('Given Error:', err);
+
+      // Done with the test
+      done();
+    });
+  });
+}); 
+
+
+
+
+describe('*Accepting Ride by Ride function*', () => {
+  it('should show acccepted rides without errors', (done) => {
+    // Test data
+    const testrideid = 2;
+
+    getAcceptedRidersByRide(connection, testrideid)
+      .then((result) => {
+      // Print the result
+      console.log('Given Response', result);
+
+      // Done with the test
+      done();
+    })
+    .catch((err) => {
+      // Print the error
+      console.error('Given Error:', err);
+
+      // Done with the test
+      done();
+    });
+  });
+});
+
+describe('*Mark Ride as Active function*', () => {
+  it('should mark ride as active without errors', (done) => {
     // Test data
     const testuserid = 100;
     const testrideid = 2;
@@ -464,7 +618,7 @@ describe('*Mark Rider as Active function*', () => {
       done();
     });
   });
-}); 
+});
 
 describe('grabActiveRide function', () => {
   it('should grab active rides without errors', (done) => {
@@ -489,13 +643,12 @@ describe('grabActiveRide function', () => {
   });
 }); 
 
-describe('*Remove Rider function*', () => {
-  it('should remove rider request without errors', (done) => {
+describe('*ridesAwaitingPickup function*', () => {
+  it('should count the amount of rides waiting without errors', (done) => {
     // Test data
-    const testuserid = 100;
-    const testrideid = 1;
+    const testriderid = 101;
 
-    removeRiderRequest(connection, testuserid, testrideid)
+    ridesAwaitingPickup(connection, testriderid)
       .then((result) => {
       // Print the result
       console.log('Given Response', result);
@@ -516,32 +669,10 @@ describe('*Remove Rider function*', () => {
 describe('*riderPickedUp function*', () => {
   it('should count the amount of riders picked without errors', (done) => {
     // Test data
-    const testrideid = 1;
+    const testrideid = 2;
+    const testriderid = 101;
 
-    riderPickedUp(connection, testrideid)
-      .then((result) => {
-      // Print the result
-      console.log('Given Response', result);
-
-      // Done with the test
-      done();
-    })
-    .catch((err) => {
-      // Print the error
-      console.error('Given Error:', err);
-
-      // Done with the test
-      done();
-    });
-  });
-}); 
-
-describe('*ridesAwaitingPickup function*', () => {
-  it('should count the amount of rides waiting without errors', (done) => {
-    // Test data
-    const testrideid = 1;
-
-    ridesAwaitingPickup(connection, testrideid)
+    riderPickedUp(connection, testrideid, testriderid)
       .then((result) => {
       // Print the result
       console.log('Given Response', result);
@@ -583,12 +714,14 @@ describe('*complete rider function*', () => {
 }); 
 
 
-describe('*Delete Pending Rides function*', () => {
-  it('should delete Pending Rides without errors', (done) => {
-    // Test data
-    const testrideid = 2;
 
-    deletePendingRiders(connection, testrideid)
+describe('*pollCompletedRides by Rider function*', () => {
+  it('should poll completed rides by rider without errors', (done) => {
+    // Test data
+    const userId = 101;
+
+    // Call the pollCompletedRides function
+    pollCompletedRidesByRider(connection, userId)
       .then((result) => {
       // Print the result
       console.log('Given Response', result);
@@ -607,13 +740,14 @@ describe('*Delete Pending Rides function*', () => {
 }); 
 
 
-describe('*deletePendingRide function*', () => {
-  it('should count the amount of rides waiting without errors', (done) => {
-    // Test data
-    const testrideid = 2;
-    const testdriverid = 100;
 
-    deletePendingRide(connection, testrideid, testdriverid)
+describe('*pollCompletedRides by Driver function*', () => {
+  it('should poll completed rides by Driver without errors', (done) => {
+    // Test data
+    const userId = 100;
+
+    // Call the pollCompletedRides function
+    pollCompletedRidesByDriver(connection, userId)
       .then((result) => {
       // Print the result
       console.log('Given Response', result);
@@ -697,13 +831,52 @@ const deleterides = (connection, userid) => {
   });
 };
 
-describe('delete completed rides function', () => {
+const deleteridesforrider = (connection, userid) => {
+  return new Promise((resolve, reject) => {
+      connection.query(
+          'DELETE FROM completed_rides_by_rider WHERE rider_id = ?',
+          [userid],
+          (err, resp) => {
+              if (err) {
+                  reject({ status: 'error', message: err.message });
+              } else {
+                  // Check if any rows were affected to determine success
+                  if (resp.affectedRows > 0) {
+                      resolve({ status: 'success', message: 'Completed Ride deleted successfully\n' });
+                  } else {
+                      reject({ status: 'error', message: 'Completed Ride not found\n' });
+                  }
+              }
+          }
+      );
+  });
+};
+
+describe('delete completed rides by driver function', () => {
   it('should delete a driver from the database', async () => {
     // Test data
     const testdriverId = 100;
 
     try {
       const result = await deleterides(connection, testdriverId);
+      // Print the result
+      console.log('Given Response', result);
+    } catch (err) {
+      // Print the error
+      console.error('Given Error:', err);
+      // Fail the test if an error occurs
+      throw err;
+    }
+  });
+});
+
+describe('delete completed rides by rider function', () => {
+  it('should delete a driver from the database', async () => {
+    // Test data
+    const testriderId = 101;
+
+    try {
+      const result = await deleteridesforrider(connection, testriderId);
       // Print the result
       console.log('Given Response', result);
     } catch (err) {
@@ -733,10 +906,28 @@ describe('deleteDriver function', () => {
   });
 });
 
-describe('deleteAccount function', () => {
+describe('delete Driver Account function', () => {
   it('should delete an account from the database', async () => {
       // Test data
       const testUserId = 100;
+
+      try {
+          const result = await deleteAccount(connection, testUserId);
+          // Print the result
+          console.log('Given Response', result);
+      } catch (err) {
+          // Print the error
+          console.error('Given Error:', err);
+          // Fail the test if an error occurs
+          throw err;
+      }
+  });
+}); 
+
+describe('delete Rider Account function', () => {
+  it('should delete an account from the database', async () => {
+      // Test data
+      const testUserId = 101;
 
       try {
           const result = await deleteAccount(connection, testUserId);
