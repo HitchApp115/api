@@ -23,3 +23,5 @@ And now the Hitch API Server is running on DigitalOceans servers at the url prov
 1. Host the Hitch API either locally or on DigitalOcean
 1. Point the frontend towards either the IPv4 Address or the supplied DigitalOcean URL
 1. Run fortend and interact. All requests will be directed towards the hosted server
+
+What each API endpoint does can be found in `./DESIGN.md` and referenced for utilizing the API with requests and without the frontend.
